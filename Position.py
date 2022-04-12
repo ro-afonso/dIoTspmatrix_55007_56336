@@ -8,7 +8,7 @@ class Position:
         pass
 
     def __str__(self):
-        pass
+        return str(self._pos)     #Isto fui eu que tentei, antes estava pass
 
     def __getitem__(self, item: int) -> int:
         pass

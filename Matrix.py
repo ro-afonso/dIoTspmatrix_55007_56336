@@ -1,5 +1,6 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
+from typing import Union
 from Position import *
 
 
@@ -37,7 +38,7 @@ class Matrix(ABC):
         raise ValueError('_add__ invalid argument')
 
     @abstractmethod
-    def _add_number(self, other: [int, float]) -> Matrix:
+    def _add_number(self, other: Union[int, float]) -> Matrix:
         raise NotImplementedError
 
     @abstractmethod
@@ -52,7 +53,7 @@ class Matrix(ABC):
         raise ValueError('__mul__ invalid argument')
 
     @abstractmethod
-    def _mul_number(self, other: [int, float]) -> Matrix:
+    def _mul_number(self, other: Union[int, float]) -> Matrix:
         raise NotImplementedError
 
     @abstractmethod
