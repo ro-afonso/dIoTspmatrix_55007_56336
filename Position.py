@@ -14,7 +14,7 @@ class Position:
         return self._pos
 
     def __str__(self):
-        return str(self.pos)     #Isto fui eu que tentei, antes estava pass
+        return str(self._pos)     #Isto fui eu que tentei, antes estava pass
 
     def __getitem__(self, item: int) -> int:
         if not(isinstance(item, int) and (0 <= item <= 1)):
@@ -24,7 +24,6 @@ class Position:
     def __eq__(self, other: Position):
         position_is_error(other, 'position __eq__: invalid arguments')
         return self._pos == other
-
 
 def position_is_error(pos: position, str: str):
     if not(position_is(pos)):
