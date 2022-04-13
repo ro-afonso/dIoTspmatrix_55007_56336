@@ -4,7 +4,11 @@ from typing import Union
 from Position import *
 
 
+spmatrix = dict[Position, float]
+
 class Matrix(ABC):
+
+    _mat = {}
 
     @abstractmethod
     def __getitem__(self, item):
@@ -61,7 +65,16 @@ class Matrix(ABC):
         raise NotImplementedError
 
     def __str__(self):
-        pass
+        dim = dim(self.mat)
+        strs = '';
+
+        for x in range(dim[0][0],dim[1][0] + 1):
+            for y in range(dim[0][1], dim[1][1] + 1):
+                strs += str(".2f" % (self._mat[1].get(Position(x,y)) or self._mat[0]))
+                if not(y == dim[1][1]):
+                    strs += ' '
+            strs += '\n'
+        return strs[:-1]
 
     @abstractmethod
     def dim(self) -> tuple[Position, ...]:

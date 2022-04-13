@@ -11,7 +11,6 @@ class Position:
         if not ((isinstance(row,int)) and row >= 0) or not((isinstance(col,int)) and col >= 0):
             raise ValueError('position __init__: invalid arguments')
         self._pos = row, col
-        return self._pos
 
     def __str__(self):
         return str(self._pos)     #Isto fui eu que tentei, antes estava pass
