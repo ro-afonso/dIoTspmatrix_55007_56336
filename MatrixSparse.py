@@ -13,8 +13,7 @@ class MatrixSparse(Matrix):
             raise ValueError('matrixsparse __init__: invalid arguments')
         if isinstance(zero, int):
             zero = float(zero)
-            self._mat = {}
-            self._zero = zero
+        self._zero = zero
 
     @property
     def zero(self) -> float:
