@@ -27,23 +27,25 @@ class MatrixSparseDOK(MatrixSparse):
     def get_items(self) -> spmatrix:
         return self._items
 
-    def __init__(self, zero: float = 0.0):
+    def __init__(self, zero: float = 0.0):        
         if not ((isinstance(zero,float) or isinstance(zero, int)) and zero >= 0):
-            raise ValueError('matrixsparseDOK __init__: invalid arguments')
+            raise ValueError('__init__() invalid arguments')  #removed matrixsparseDOK
         if isinstance(zero, int):
             zero = float(zero)
         self._items = {}
         self._zero = zero
+        print("mat: ",self)
 
     def __copy__(self):
         return self.copy()
 
     def __eq__(self, other: MatrixSparseDOK):
-        spmatrix_is_error(other, "matrixsparseDOK __eq__: invalid arguments")
+        spmatrix_is_error(other, "__eq__() invalid arguments") #removed matrixsparseDOK
         temp = False
-        if self._items.keys() == other.get_items.keys():
+        if self._items.keys() == other.get_items.keys():            
             for k in list(self._items.keys()):
-                if(self[k] == other[k]):
+                if(self[k] == 
+                other[k]):
                     temp == True
             
         if temp == True and self.zero == other.zero:

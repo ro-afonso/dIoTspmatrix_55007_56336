@@ -53,7 +53,7 @@ class TestPositionInit(unittest.TestCase):
         try:
             Position(1, 2, 3)
         except TypeError as error:
-            self.assertEqual(str(error), '__init__() takes 3 positional arguments but 4 were given')
+            self.assertEqual(str(error), 'Position.__init__() takes 3 positional arguments but 4 were given') #added Position. in beginning of str
 
 
 class TestPositionEqual(unittest.TestCase):

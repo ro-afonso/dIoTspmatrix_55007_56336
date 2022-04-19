@@ -4,7 +4,7 @@ import copy
 from MatrixSparseDOK import *
 
 
-class TestMatrixSparseInit(unittest.TestCase):
+""" class TestMatrixSparseInit(unittest.TestCase):
 
     def test_matrixsparse_init_zero_default(self):
         self.assertTrue(isinstance(MatrixSparseDOK(), MatrixSparseDOK))
@@ -19,6 +19,7 @@ class TestMatrixSparseInit(unittest.TestCase):
         try:
             self.assertTrue(isinstance(MatrixSparseDOK((0.0,)), MatrixSparseDOK))
         except ValueError as error:
+            print("erro:",error)
             assert str(error) == '__init__() invalid arguments'
 
     def test_matrixsparse_init_zero_list(self):
@@ -31,7 +32,7 @@ class TestMatrixSparseInit(unittest.TestCase):
         try:
             self.assertTrue(isinstance(MatrixSparseDOK('0.0'), MatrixSparseDOK))
         except ValueError as error:
-            assert str(error) == '__init__() invalid arguments'
+            assert str(error) == '__init__() invalid arguments' """
 
 
 class TestMatrixSparseSetItem(unittest.TestCase):
@@ -41,7 +42,7 @@ class TestMatrixSparseSetItem(unittest.TestCase):
         m[Position(1, 1)] = 1.1
         self.assertEqual(1, len(m))
 
-    def test_matrixsparse_setitem_pos_tuple_1_1(self):
+    """ def test_matrixsparse_setitem_pos_tuple_1_1(self):
         m = MatrixSparseDOK()
         m[1, 1] = 1.1
         self.assertEqual(1, len(m))
@@ -206,10 +207,10 @@ class TestMatrixSparseGetItem(unittest.TestCase):
         try:
             m.__getitem__((1, 2, 3))
         except ValueError as error:
-            self.assertEqual(str(error), '__getitem__() invalid arguments')
+            self.assertEqual(str(error), '__getitem__() invalid arguments') """
 
 
-class TestMatrixSparseZeroGet(unittest.TestCase):
+""" class TestMatrixSparseZeroGet(unittest.TestCase):
 
     def test_matrixsparse_zeroget_empty_matrix_zero_default(self):
         m = MatrixSparseDOK()
@@ -406,7 +407,7 @@ class TestMatrixSparseSparsity(unittest.TestCase):
         m[1, 2] = 1.2
         m[2, 1] = 2.1
         m.zero = 1.2
-        self.assertEqual(0.0, m.sparsity())
+        self.assertEqual(0.0, m.sparsity()) """
 
 
 if __name__ == '__main__':

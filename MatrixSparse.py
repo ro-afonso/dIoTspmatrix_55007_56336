@@ -10,7 +10,7 @@ class MatrixSparse(Matrix):
 
     def __init__(self, zero):
         if not ((isinstance(zero,float) or isinstance(zero, int)) and zero >= 0):
-            raise ValueError('matrixsparse __init__: invalid arguments')
+            raise ValueError('__init__() invalid arguments') #removed matrixsparse
         if isinstance(zero, int):
             zero = float(zero)
         self._zero = zero

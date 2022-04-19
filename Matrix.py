@@ -60,7 +60,7 @@ class Matrix(ABC):
         raise NotImplementedError
 
     def __str__(self):
-        pass
+        pass    #TODO
 
     @abstractmethod
     def dim(self) -> tuple[Position, ...]:
