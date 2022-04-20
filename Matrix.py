@@ -60,7 +60,18 @@ class Matrix(ABC):
         raise NotImplementedError
 
     def __str__(self):
-        pass    #TODO
+        dim = self.dim()
+        strs = '';
+        try:
+            for x in range(dim[0][0],dim[1][0] + 1):
+                for y in range(dim[0][1],dim[1][1] + 1):
+                    strs += str(self[Position(x,y)])
+                    if not(y == dim[1][1]):
+                        strs += ' '
+                strs += '\n'
+        except ValueError as error:
+            raise ValueError("__str__ invalid argument")
+        return strs[:-1]
 
     @abstractmethod
     def dim(self) -> tuple[Position, ...]:

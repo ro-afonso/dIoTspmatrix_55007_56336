@@ -23,21 +23,38 @@ def spmatrix_is(mat: MatrixSparseDOK) -> bool:
 
 class MatrixSparseDOK(MatrixSparse):
     _items = spmatrix
+    
 
     def get_items(self) -> spmatrix:
         return self._items
 
-    def __init__(self, zero: float = 0.0):        
-        if not ((isinstance(zero,float) or isinstance(zero, int)) and zero >= 0):
+    def __init__(self, zero: float = 0):        
+        if not ((isinstance(zero,float) or isinstance(zero, int)) ):
+            """ and zero >= 0 """
             raise ValueError('__init__() invalid arguments')  #removed matrixsparseDOK
-        if isinstance(zero, int):
-            zero = float(zero)
+        """ if isinstance(zero, int):
+            zero = float(zero) """
         self._items = {}
         self._zero = zero
         #print("mat: ",self)
 
+    @property
+    def zero(self) -> float:
+        return self._zero
+
+    @zero.setter
+    def zero(self, val: float):
+        MatrixSparse.zero.fset(self, val)
+        temp_dict = self._items.copy()
+        for k in temp_dict:
+            if temp_dict[k] == self._zero:
+                del self._items[k]
+
     def __copy__(self):
-        return self.copy()
+        m = MatrixSparseDOK(self.zero)
+        for k in self._items:
+                m[k] = self._items[k]
+        return m
 
     def __eq__(self, other: MatrixSparseDOK):
         spmatrix_is_error(other, "__eq__() invalid arguments") #removed matrixsparseDOK
@@ -68,9 +85,9 @@ class MatrixSparseDOK(MatrixSparse):
     def __setitem__(self, pos: Union[Position, position], val: Union[int, float]):
         pos = create_pos(pos, "__setitem__() invalid arguments")
         position_is_error(pos, "__setitem__() invalid arguments")
-        if isinstance(val, int):    
-            val = float(val)    
-        if not(isinstance(val, float)):
+        """ if isinstance(val, int):    
+            val = float(val)   """  
+        if not(isinstance(val, float) or isinstance(val, int)):
             raise ValueError("__setitem__() invalid arguments")
         if val < 0:
             raise ValueError("__setitem__() invalid arguments")    
@@ -82,9 +99,9 @@ class MatrixSparseDOK(MatrixSparse):
         return len(self._items)
 
     def _add_number(self, other: Union[int, float]) -> Matrix:
-        if isinstance(other, int):    
-            other = float(other)    
-        if not(isinstance(other, float)):
+        """ if isinstance(other, int):    
+            other = float(other)  """   
+        if not(isinstance(other, float) or isinstance(other, int)):
             raise ValueError("_add_number() invalid arguments")
         for k in list(self._items.keys()):
             self[k] += other
@@ -105,9 +122,9 @@ class MatrixSparseDOK(MatrixSparse):
                 self[Position(dim[0][0] + row, dim[0][1] + col)] += other[Position(dim1[0][0] + row, dim1[0][1] + col)]
 
     def _mul_number(self, other: Union[int, float]) -> Matrix:
-        if isinstance(other, int):    
-            other = float(other)    
-        if not(isinstance(other, float)):
+        """ if isinstance(other, int):    
+            other = float(other)   """  
+        if not(isinstance(other, float) or isinstance(other, int)):
             raise ValueError("_mul_number() invalid arguments")
         for k in list(self._items.keys()):
             self[k] *= other
@@ -131,7 +148,7 @@ class MatrixSparseDOK(MatrixSparse):
             raise ValueError("row() invalid arguments")
         if row < 0:
             raise ValueError("row() invalid arguments")
-        m = MatrixSparseDOK(self.zero())
+        m = MatrixSparseDOK(self.zero)
         keys = list(self._items.keys())
         for num in range(len(keys)):
             if keys[num][0] == row:
@@ -144,7 +161,7 @@ class MatrixSparseDOK(MatrixSparse):
             raise ValueError("col() invalid arguments")
         if col < 0:
             raise ValueError("col() invalid arguments")
-        m = MatrixSparseDOK(self.zero())
+        m = MatrixSparseDOK(self.zero)
         keys = list(self._items.keys())
         for num in range(len(keys)):
             if keys[num][1] == col:

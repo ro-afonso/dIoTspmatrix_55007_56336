@@ -228,9 +228,8 @@ class TestMatrixSparseZeroGet(unittest.TestCase):
         m = MatrixSparseDOK(-sys.maxsize)
         self.assertEqual(-sys.maxsize, m.zero)
 
-"""
 class TestMatrixSparseZeroSet(unittest.TestCase):
-
+    
     def test_matrixsparse_zeroset_change_zero_from_1_to_0(self):
         m = MatrixSparseDOK(1.0)
         m.zero = 0.0
@@ -256,7 +255,7 @@ class TestMatrixSparseZeroSet(unittest.TestCase):
         m.zero = 2.2
         self.assertEqual(2.2, m[Position(1, 1)])
         self.assertEqual(0, len(m))
-
+    
     def test_matrixsparse_zeroget_after_multiple_zero_sets(self):
         m = MatrixSparseDOK(6.0)
         m[Position(1, 1)] = 1.1
@@ -366,7 +365,6 @@ class TestMatrixSparseRow(unittest.TestCase):
         for key, value in test.items():
             self.assertAlmostEqual(value, m2[Position(key[0], key[1])])
 
-
 class TestMatrixSparseCol(unittest.TestCase):
 
     def test_01_col_m2x2_2items(self):
@@ -407,7 +405,7 @@ class TestMatrixSparseSparsity(unittest.TestCase):
         m[1, 2] = 1.2
         m[2, 1] = 2.1
         m.zero = 1.2
-        self.assertEqual(0.0, m.sparsity()) """
+        self.assertEqual(0.0, m.sparsity())
 
 
 if __name__ == '__main__':

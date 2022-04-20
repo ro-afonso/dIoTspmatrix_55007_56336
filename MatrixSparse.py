@@ -9,10 +9,11 @@ class MatrixSparse(Matrix):
     _zero = float
 
     def __init__(self, zero):
-        if not ((isinstance(zero,float) or isinstance(zero, int)) and zero >= 0):
+        if not ((isinstance(zero,float) or isinstance(zero, int)) ):
+            """ and zero >= 0 """
             raise ValueError('__init__() invalid arguments') #removed matrixsparse
-        if isinstance(zero, int):
-            zero = float(zero)
+        """ if isinstance(zero, int):
+            zero = float(zero) """
         self._zero = zero
 
     @property
@@ -21,15 +22,12 @@ class MatrixSparse(Matrix):
 
     @zero.setter
     def zero(self, val: float):
-        if not ((isinstance(val,float) or isinstance(val, int)) and val >= 0):
+        if not ((isinstance(val,float) or isinstance(val, int))):
+            """and val >= 0"""
             raise ValueError('__zero__() invalid arguments')
-        if isinstance(val, int):
-            val = float(val)
-        self._zero = val
-
-        listofKeys = [key for(key, value) in self._mat[1].items() if value == self._zero]
-        for k in listofKeys:
-            del self._mat[1][k]    
+        """ if isinstance(val, int):
+            val = float(val) """
+        self._zero = val   
 
 
     @abstractmethod
@@ -37,11 +35,10 @@ class MatrixSparse(Matrix):
         raise NotImplementedError
 
     def sparsity(self) -> float:
-        dim = dim(self._mat)
-        keys = list(self._mat[1].keys())
-        if(len(keys) == 0):
+        dim = self.dim()
+        if(len(self) == 0):
             return 1.0
-        return 1.0 - (len(keys) / ((dim[1][0] - dim[0][0] + 1) * (dim[1][1] - dim[0][1] + 1)))
+        return 1.0 - (len(self) / ((dim[1][0] - dim[0][0] + 1) * (dim[1][1] - dim[0][1] + 1)))
 
 
     @staticmethod
