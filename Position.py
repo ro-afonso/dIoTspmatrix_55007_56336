@@ -1,4 +1,5 @@
 from __future__ import annotations
+from ctypes import Union
 from turtle import pos
 
 position = tuple[int, int]
@@ -25,6 +26,9 @@ class Position:
         position_is_error(other, '__eq__() invalid arguments')
         return self._pos == other._pos   #usamos other._pos para não comparar tuple com object Position
 
+    def get_pos(self)-> tuple(int,int):
+        return self._pos
+
 def position_is_error(pos: Position, str: str):
     if not(position_is(pos)):
         raise ValueError(str)
@@ -39,3 +43,14 @@ def position_is(pos: Position) -> bool:
         return False
     #print(3)
     return True
+
+def create_pos(pos: Union[tuple, Position], str: str) -> Position:
+    p = pos
+    if(isinstance(pos, tuple) and len(pos) == 2):
+        try:
+            p = Position(pos[0], pos[1])
+        except:
+            raise ValueError(str)
+    elif not(isinstance(pos, Position)):
+        raise ValueError(str)
+    return p 

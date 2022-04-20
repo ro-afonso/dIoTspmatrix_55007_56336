@@ -34,7 +34,7 @@ class MatrixSparseDOK(MatrixSparse):
             zero = float(zero)
         self._items = {}
         self._zero = zero
-        print("mat: ",self)
+        #print("mat: ",self)
 
     def __copy__(self):
         return self.copy()
@@ -58,23 +58,25 @@ class MatrixSparseDOK(MatrixSparse):
         pass
 
     def __getitem__(self, pos: Union[Position, position]) -> float:
-        position_is_error(pos, "matrixsparseDOK __getitem__: invalid arguments")
-        if pos in self._items.keys():    
-            return self._items[pos]
+        pos = create_pos(pos, "__getitem__() invalid arguments")
+        position_is_error(pos, "__getitem__() invalid arguments")
+        if pos.get_pos() in self._items.keys():    
+            return self._items[pos.get_pos()]
         else:
             return self._zero
 
     def __setitem__(self, pos: Union[Position, position], val: Union[int, float]):
-        position_is_error(pos, "matrixsparseDOK __setitem__: invalid arguments")
+        pos = create_pos(pos, "__setitem__() invalid arguments")
+        position_is_error(pos, "__setitem__() invalid arguments")
         if isinstance(val, int):    
             val = float(val)    
         if not(isinstance(val, float)):
-            raise ValueError("matrixsparseDOK __setitem__: invalid arguments")
+            raise ValueError("__setitem__() invalid arguments")
         if val < 0:
-            raise ValueError("matrixsparseDOK __setitem__: invalid arguments")    
-        self[pos] = val
-        if(val == self.zero()):
-            del self[pos]
+            raise ValueError("__setitem__() invalid arguments")    
+        self._items[pos.get_pos()] = val
+        if(val == self.zero):
+            del self._items[pos.get_pos()]
 
     def __len__(self) -> int:
         return len(self._items)
@@ -83,20 +85,20 @@ class MatrixSparseDOK(MatrixSparse):
         if isinstance(other, int):    
             other = float(other)    
         if not(isinstance(other, float)):
-            raise ValueError("matrixsparseDOK _add_number: invalid arguments")
+            raise ValueError("_add_number() invalid arguments")
         for k in list(self._items.keys()):
             self[k] += other
         self.zero(self.zero + other)
         
 
     def _add_matrix(self, other: MatrixSparse) -> MatrixSparse:
-        spmatrix_is_error(other, "matrixsparseDOK _add_matrix: invalid arguments")
+        spmatrix_is_error(other, "_add_matrix() invalid arguments")
         dim = self.dim()
         dim1 = other.dim()
         y_dim = dim[1][0] - dim[0][0]
         x_dim = dim[1][1] - dim[0][1]
         if not(y_dim == dim1[1][0] - dim1[0][0] and x_dim == dim1[1][1] - dim1[0][1]):
-            raise ValueError("matrixsparseDOK _add_matrix: invalid arguments")
+            raise ValueError("_add_matrix() invalid arguments")
         self.zero(self.zero() + other.zero())
         for row in range(y_dim + 1):
             for col in range(x_dim + 1):
@@ -106,7 +108,7 @@ class MatrixSparseDOK(MatrixSparse):
         if isinstance(other, int):    
             other = float(other)    
         if not(isinstance(other, float)):
-            raise ValueError("matrixsparseDOK _mul_number: invalid arguments")
+            raise ValueError("_mul_number() invalid arguments")
         for k in list(self._items.keys()):
             self[k] *= other
         self.zero(self.zero * other)
@@ -126,9 +128,9 @@ class MatrixSparseDOK(MatrixSparse):
 
     def row(self, row: int) -> Matrix:
         if not(isinstance(row, int)):
-            raise ValueError("matrixsparseDOK row: invalid arguments")
+            raise ValueError("row() invalid arguments")
         if row < 0:
-            raise ValueError("matrixsparseDOK row: invalid arguments")
+            raise ValueError("row() invalid arguments")
         m = MatrixSparseDOK(self.zero())
         keys = list(self._items.keys())
         for num in range(len(keys)):
@@ -139,9 +141,9 @@ class MatrixSparseDOK(MatrixSparse):
 
     def col(self, col: int) -> Matrix:
         if not(isinstance(col, int)):
-            raise ValueError("matrixsparseDOK col: invalid arguments")
+            raise ValueError("col() invalid arguments")
         if col < 0:
-            raise ValueError("matrixsparseDOK col: invalid arguments")
+            raise ValueError("col() invalid arguments")
         m = MatrixSparseDOK(self.zero())
         keys = list(self._items.keys())
         for num in range(len(keys)):
@@ -151,7 +153,7 @@ class MatrixSparseDOK(MatrixSparse):
         return m
 
     def diagonal(self) -> Matrix:
-        self.spmatrix_is_square_error("matrixsparseDOK diagonal: invalid arguments")
+        self.spmatrix_is_square_error("diagonal() invalid arguments")
         keys = list(self._items.keys())
         xs = [k[0] for k in keys]
         m = MatrixSparseDOK(self.zero)
@@ -182,7 +184,7 @@ class MatrixSparseDOK(MatrixSparse):
 
     def spmatrix_is_square_error(self, str1: str):
         if not(isinstance(str1, str)):
-            raise ValueError("matrixsparseDOK spmatrix_is_square_error: invalid arguments")
+            raise ValueError("spmatrix_is_square_error() invalid arguments")
         keys = list(self._items.keys())
         xs = [k[0] for k in keys]
         ys = [k[1] for k in keys]

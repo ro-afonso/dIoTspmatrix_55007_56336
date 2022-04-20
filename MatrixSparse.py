@@ -22,7 +22,7 @@ class MatrixSparse(Matrix):
     @zero.setter
     def zero(self, val: float):
         if not ((isinstance(val,float) or isinstance(val, int)) and val >= 0):
-            raise ValueError('matrixsparse __zero__: invalid arguments')
+            raise ValueError('__zero__() invalid arguments')
         if isinstance(val, int):
             val = float(val)
         self._zero = val

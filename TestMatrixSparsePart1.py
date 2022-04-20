@@ -4,7 +4,7 @@ import copy
 from MatrixSparseDOK import *
 
 
-""" class TestMatrixSparseInit(unittest.TestCase):
+class TestMatrixSparseInit(unittest.TestCase):
 
     def test_matrixsparse_init_zero_default(self):
         self.assertTrue(isinstance(MatrixSparseDOK(), MatrixSparseDOK))
@@ -32,7 +32,7 @@ from MatrixSparseDOK import *
         try:
             self.assertTrue(isinstance(MatrixSparseDOK('0.0'), MatrixSparseDOK))
         except ValueError as error:
-            assert str(error) == '__init__() invalid arguments' """
+            assert str(error) == '__init__() invalid arguments'
 
 
 class TestMatrixSparseSetItem(unittest.TestCase):
@@ -42,7 +42,7 @@ class TestMatrixSparseSetItem(unittest.TestCase):
         m[Position(1, 1)] = 1.1
         self.assertEqual(1, len(m))
 
-    """ def test_matrixsparse_setitem_pos_tuple_1_1(self):
+    def test_matrixsparse_setitem_pos_tuple_1_1(self):
         m = MatrixSparseDOK()
         m[1, 1] = 1.1
         self.assertEqual(1, len(m))
@@ -137,7 +137,7 @@ class TestMatrixSparseSetItem(unittest.TestCase):
         try:
             m.__setitem__((1,1), '0.0')
         except ValueError as error:
-            self.assertEqual(str(error), '__setitem__() invalid arguments')
+            self.assertEqual(str(error), '__setitem__() invalid arguments') 
 
 
 class TestMatrixSparseGetItem(unittest.TestCase):
@@ -146,7 +146,7 @@ class TestMatrixSparseGetItem(unittest.TestCase):
         m = MatrixSparseDOK()
         m[Position(1, 1)] = 1.1
         self.assertEqual(m[Position(1, 1)], 1.1)
-
+    
     def test_matrixsparse_getitem_using_tuple_m1x1_with_1item(self):
         m = MatrixSparseDOK()
         m[Position(1, 1)] = 1.1
@@ -207,10 +207,10 @@ class TestMatrixSparseGetItem(unittest.TestCase):
         try:
             m.__getitem__((1, 2, 3))
         except ValueError as error:
-            self.assertEqual(str(error), '__getitem__() invalid arguments') """
+            self.assertEqual(str(error), '__getitem__() invalid arguments')
 
 
-""" class TestMatrixSparseZeroGet(unittest.TestCase):
+class TestMatrixSparseZeroGet(unittest.TestCase):
 
     def test_matrixsparse_zeroget_empty_matrix_zero_default(self):
         m = MatrixSparseDOK()
@@ -228,7 +228,7 @@ class TestMatrixSparseGetItem(unittest.TestCase):
         m = MatrixSparseDOK(-sys.maxsize)
         self.assertEqual(-sys.maxsize, m.zero)
 
-
+"""
 class TestMatrixSparseZeroSet(unittest.TestCase):
 
     def test_matrixsparse_zeroset_change_zero_from_1_to_0(self):
