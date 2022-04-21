@@ -44,6 +44,11 @@ class TestMatrixSparseEqual(unittest.TestCase):
         m2 = MatrixSparseImplementation(1.0)
         self.assertEqual(m1, m2)
 
+    # __eq__ test equal matrix to number
+    def test_05___eq___(self):
+        m1 = MatrixSparseImplementation(1.0)
+        self.assertFalse(m1.__eq__(1.0))
+
 
 class TestMatrixSparseIter(unittest.TestCase):
 
@@ -99,6 +104,12 @@ class TestMatrixSparseIter(unittest.TestCase):
             self.assertAlmostEqual(m1_data[test_list[i]], m1[pos])
             i += 1
 
+    # __iter__ test empty matrix
+    def test_05___iter___empty_matrix(self):
+        m1 = MatrixSparseImplementation(1.0)
+        for pos in m1:
+            self.assertTrue(False, "__iter__ failed to execute")
+
 
 class TestMatrixSparseTranspose(unittest.TestCase):
 
@@ -109,7 +120,6 @@ class TestMatrixSparseTranspose(unittest.TestCase):
         for key, value in m1_data.items():
             m1[Position(key[0], key[1])] = value
         m2 = m1.transpose()
-        self.assertAlmostEqual(m2.zero, m1.zero)
         m2_data = {(1, 1): 1.1, (1, 2): 2.1, (2, 1): 1.2, (2, 2): 2.2}
         for key, value in m2_data.items():
             self.assertAlmostEqual(value, m2[Position(key[0], key[1])])
@@ -126,7 +136,6 @@ class TestMatrixSparseTranspose(unittest.TestCase):
         for key, value in m1_data.items():
             m1[Position(key[0], key[1])] = value
         m2 = m1.transpose()
-        self.assertAlmostEqual(m2.zero, m1.zero)
         m2_data = {(1, 1): 1.1, (2, 1): 1.2, (3, 1): 1.3, (1, 2): 2.1, (2, 2): 2.2, (3, 2): 2.3}
         for key, value in m2_data.items():
             self.assertAlmostEqual(value, m2[Position(key[0], key[1])])
@@ -143,7 +152,6 @@ class TestMatrixSparseTranspose(unittest.TestCase):
         for key, value in m1_data.items():
             m1[Position(key[0], key[1])] = value
         m2 = m1.transpose()
-        self.assertAlmostEqual(m2.zero, m1.zero)
         m2_data = {(1, 1): 1.1}
         for key, value in m2_data.items():
             self.assertAlmostEqual(value, m2[Position(key[0], key[1])])
@@ -160,6 +168,19 @@ class TestMatrixSparseTranspose(unittest.TestCase):
         self.assertAlmostEqual(m2.zero, m1.zero)
         self.assertEqual(0, len(m2))
 
+    # transpose test for matrix 5x5 with 25 elements
+    def test_05_transpose_matrix_5x5_25items(self):
+        m1 = MatrixSparseImplementation(0.0)
+        for row in range(5):
+            for col in range(5):
+                m1[Position(row, col)] = row * 5 + col + 1
+        m2 = m1.transpose()
+        for row in range(1, 6):
+            for col in range(1, 6):
+                self.assertAlmostEqual(m1[Position(col, row)], m2[Position(row, col)])
+        self.assertAlmostEqual(m2.zero, m1.zero)
+        self.assertEqual(len(m1), len(m2))
+
 
 class TestMatrixSparseAddNumber(unittest.TestCase):
 
@@ -170,7 +191,6 @@ class TestMatrixSparseAddNumber(unittest.TestCase):
         for key, value in m1_data.items():
             m1[Position(key[0], key[1])] = value
         m2 = m1 + 0
-        self.assertAlmostEqual(m2.zero, m1.zero)
         m2_data = {(1, 1): 1.1, (1, 2): 1.2, (1, 3): 1.3, (2, 1): 2.1, (2, 2): 2.2, (2, 3): 2.3}
         for key, value in m2_data.items():
             self.assertAlmostEqual(value, m2[Position(key[0], key[1])])
@@ -186,7 +206,6 @@ class TestMatrixSparseAddNumber(unittest.TestCase):
         for key, value in m1_data.items():
             m1[Position(key[0], key[1])] = value
         m2 = m1 + 1
-        self.assertAlmostEqual(m2.zero, m1.zero)
         m2_data = {(1, 1): 2.1, (1, 2): 2.2, (1, 3): 2.3, (2, 1): 3.1, (2, 2): 3.2, (2, 3): 3.3}
         for key, value in m2_data.items():
             self.assertAlmostEqual(value, m2[Position(key[0], key[1])])
@@ -202,7 +221,6 @@ class TestMatrixSparseAddNumber(unittest.TestCase):
         for key, value in m1_data.items():
             m1[Position(key[0], key[1])] = value
         m2 = m1 + -1
-        self.assertAlmostEqual(m2.zero, m1.zero)
         m2_data = {(1, 1): 0.1, (1, 2): 0.2, (1, 3): 0.3, (2, 1): 1.1, (2, 2): 1.2, (2, 3): 1.3}
         for key, value in m2_data.items():
             self.assertAlmostEqual(value, m2[Position(key[0], key[1])])
@@ -218,7 +236,6 @@ class TestMatrixSparseAddNumber(unittest.TestCase):
         for key, value in m1_data.items():
             m1[Position(key[0], key[1])] = value
         m2 = m1 + 1
-        self.assertAlmostEqual(m2.zero, m1.zero)
         m2_data = {(1, 1): 2.1}
         for key, value in m2_data.items():
             self.assertAlmostEqual(value, m2[Position(key[0], key[1])])
@@ -226,6 +243,13 @@ class TestMatrixSparseAddNumber(unittest.TestCase):
         self.assertEqual(len(m2_data), len(m2))
         for key, value in m1_data.items():
             self.assertAlmostEqual(value, m1[Position(key[0], key[1])])
+
+    # __add__ test empty matrix with number 1
+    def test_05___add___empty_matrix_with_number_1(self):
+        m1 = MatrixSparseImplementation(1.0)
+        m2 = m1 + 1
+        self.assertAlmostEqual(m2.zero, m1.zero)
+        self.assertEqual(0, len(m2))
 
 
 class TestMatrixSparseAddMatrix(unittest.TestCase):
@@ -317,6 +341,22 @@ class TestMatrixSparseAddMatrix(unittest.TestCase):
             self.assertAlmostEqual(value, m2[Position(key[0], key[1])])
         self.assertEqual(len(m2_data), len(m2))
 
+    # __add__ matrix test of incompatible matrices having different zeros
+    def test_05___add___m2x3_4items_with_m2x3_4items_different_zeros(self):
+        m1 = MatrixSparseImplementation(1)
+        m1_data = {(1, 1): 1.1, (1, 2): 1.2, (1, 3): 1.3, (2, 1): 2.1}
+        for key, value in m1_data.items():
+            m1[Position(key[0], key[1])] = value
+        m2 = MatrixSparseImplementation(2)
+        m2_data = {(1, 3): 1.3, (2, 1): 2.1, (2, 2): 2.2, (2, 3): 2.3}
+        for key, value in m2_data.items():
+            m2[Position(key[0], key[1])] = value
+        try:
+            m3 = m1 + m2
+            self.assertTrue(False, "Failed to Raise Exception")
+        except ValueError as error:
+            assert str(error) == '_add_matrix() incompatible matrices'
+
 
 class TestMatrixSparseMulNumber(unittest.TestCase):
 
@@ -327,7 +367,6 @@ class TestMatrixSparseMulNumber(unittest.TestCase):
         for key, value in m1_data.items():
             m1[Position(key[0], key[1])] = value
         m2 = m1 * 1
-        self.assertAlmostEqual(m2.zero, m1.zero)
         m2_data = {(1, 1): 1.1, (1, 2): 1.2, (1, 3): 1.3, (2, 1): 2.1, (2, 2): 2.2, (2, 3): 2.3}
         for key, value in m2_data.items():
             self.assertAlmostEqual(value, m2[Position(key[0], key[1])])
@@ -343,7 +382,6 @@ class TestMatrixSparseMulNumber(unittest.TestCase):
         for key, value in m1_data.items():
             m1[Position(key[0], key[1])] = value
         m2 = m1 * 2
-        self.assertAlmostEqual(m2.zero, m1.zero)
         m2_data = {(1, 1): 2.2, (1, 2): 2.4, (1, 3): 2.6, (2, 1): 4.2, (2, 2): 4.4, (2, 3): 4.6}
         for key, value in m2_data.items():
             self.assertAlmostEqual(value, m2[Position(key[0], key[1])])
@@ -359,7 +397,6 @@ class TestMatrixSparseMulNumber(unittest.TestCase):
         for key, value in m1_data.items():
             m1[Position(key[0], key[1])] = value
         m2 = m1 * (1/2)
-        self.assertAlmostEqual(m2.zero, m1.zero)
         m2_data = {(1, 1): 1.1/2, (1, 2): 1.2/2, (1, 3): 1.3/2, (2, 1): 2.1/2, (2, 2): 2.2/2, (2, 3): 2.3/2}
         for key, value in m2_data.items():
             self.assertAlmostEqual(value, m2[Position(key[0], key[1])])
@@ -368,14 +405,13 @@ class TestMatrixSparseMulNumber(unittest.TestCase):
         for key, value in m1_data.items():
             self.assertAlmostEqual(value, m1[Position(key[0], key[1])])
 
-    # __mul__ test matrix one element with number 1
+    # __mul__ test matrix one element with number 2
     def test_04___mul___m1x1_1item_with_number_2(self):
         m1 = MatrixSparseImplementation()
         m1_data = {(1, 1): 1.1}
         for key, value in m1_data.items():
             m1[Position(key[0], key[1])] = value
         m2 = m1 * 2
-        self.assertAlmostEqual(m2.zero, m1.zero)
         m2_data = {(1, 1): 2.2}
         for key, value in m2_data.items():
             self.assertAlmostEqual(value, m2[Position(key[0], key[1])])
@@ -383,6 +419,13 @@ class TestMatrixSparseMulNumber(unittest.TestCase):
         self.assertEqual(len(m2_data), len(m2))
         for key, value in m1_data.items():
             self.assertAlmostEqual(value, m1[Position(key[0], key[1])])
+
+    # __mul__ test empty matrix with number 2
+    def test_05___mul___empty_matrix_with_number_2(self):
+        m1 = MatrixSparseImplementation(1.0)
+        m2 = m1 * 2
+        self.assertAlmostEqual(m2.zero, m1.zero)
+        self.assertEqual(0, len(m2))
 
 
 class TestMatrixSparseMulMatrix(unittest.TestCase):
@@ -398,7 +441,6 @@ class TestMatrixSparseMulMatrix(unittest.TestCase):
         for key, value in m2_data.items():
             m2[Position(key[0], key[1])] = value
         m3 = m1 * m2
-        self.assertAlmostEqual(m3.zero, m1.zero)
         m3_data = {(1, 1): 7, (1, 2): 10, (2, 1): 15, (2, 2): 22}
         for key, value in m3_data.items():
             self.assertAlmostEqual(value, m3[Position(key[0], key[1])])
@@ -482,6 +524,22 @@ class TestMatrixSparseMulMatrix(unittest.TestCase):
             self.assertAlmostEqual(value, m2[Position(key[0], key[1])])
         self.assertEqual(len(m2_data), len(m2))
 
+    # __mul__ matrix test of incompatible matrices having different zeros
+    def test_05___mul___incompatible_m2x3_4items_with_m3x2_4items_different_zeros(self):
+        m1 = MatrixSparseImplementation(1)
+        m1_data = {(1, 1): 1.1, (1, 2): 1.2, (1, 3): 1.3, (2, 1): 2.1}
+        for key, value in m1_data.items():
+            m1[Position(key[0], key[1])] = value
+        m2 = MatrixSparseImplementation(2)
+        m2_data = {(1, 3): 1.3, (2, 1): 2.1, (2, 2): 2.2, (2, 3): 2.3}
+        for key, value in m2_data.items():
+            m2[Position(key[0], key[1])] = value
+        try:
+            m3 = m1 * m2
+            self.assertTrue(False, "Failed to Raise Exception")
+        except ValueError as error:
+            assert str(error) == '_mul_matrix() incompatible matrices'
+
 
 class TestMatrixSparseEye(unittest.TestCase):
 
@@ -521,6 +579,14 @@ class TestMatrixSparseEye(unittest.TestCase):
         m1 = MatrixSparseImplementation.eye(0, 4, 8)
         self.assertAlmostEqual(m1.zero, 8.0)
         self.assertEqual(0, len(m1))
+
+    # eye test invalid parameters
+    def test_05_eye_m3x3_invalid_parameter_size(self):
+        try:
+            MatrixSparseImplementation.eye(-1, 4, 8)
+            self.assertTrue(False, "Failed to Raise Exception")
+        except ValueError as error:
+            assert str(error) == 'eye() invalid parameters'
 
 
 class TestMatrixSparseCompress(unittest.TestCase):
@@ -564,6 +630,18 @@ class TestMatrixSparseCompress(unittest.TestCase):
         vc = m1.compress()
         res = ((2, 2), 1.0, (2.2, 3.3, 4.4, 5.5, 6.6), (2, 3, 4, 5, 6), (0, 0, 0, 0, 0))
         self.assertEqual(vc, res)
+
+    # compress test with dense matrix
+    def test_05_compress_dense_m3x1_2items(self):
+        m1 = MatrixSparseImplementation()
+        m1_data = {(1, 1): 1.1, (3, 1): 3.1}
+        for key, value in m1_data.items():
+            m1[Position(key[0], key[1])] = value
+        try:
+            vc = m1.compress()
+            self.assertTrue(False, "Failed to Raise Exception")
+        except ValueError as error:
+            assert str(error) == 'compress() dense matrix'
 
 
 class TestMatrixSparseDoi(unittest.TestCase):
@@ -616,6 +694,15 @@ class TestMatrixSparseDoi(unittest.TestCase):
             for c in range(dim[0][1], dim[1][1] + 1):
                 self.assertAlmostEqual(MatrixSparseImplementation.doi(vc, Position(r, c)), m1[Position(r, c)])
 
+    # doi test invalid compressed vector due to invalid upper left position
+    def test_05_doi_invalid_compressed_vector_invalid_uppper_left_corner_type(self):
+        vc = ((6, 1, 1), 0.0, (8.1, 8.2, 6.2, 6.3, 8.5, 7.4, 0.0), (8, 8, 6, 6, 8, 7, -1, -1), (1, 2, 0))
+        try:
+            self.assertAlmostEqual(MatrixSparseImplementation.doi(vc, Position(6, 2)), 6.2)
+            self.assertTrue(False, "Failed to Raise Exception")
+        except ValueError as error:
+            assert str(error) == 'doi() invalid parameters'
+
 
 class TestMatrixSparseDecompress(unittest.TestCase):
 
@@ -654,6 +741,16 @@ class TestMatrixSparseDecompress(unittest.TestCase):
         vc = ((2, 2), 1.0, (2.2, 3.3), (2, 3), (0, 0))
         m1 = MatrixSparseImplementation.decompress(vc)
         m1_data = {(2, 2): 2.2, (3, 3): 3.3}
+        for key, value in m1_data.items():
+            self.assertAlmostEqual(value, m1[Position(key[0], key[1])])
+        self.assertAlmostEqual(m1.zero, vc[1])
+        self.assertEqual(len(m1_data), len(m1))
+
+    # decompress test matrix all rows with same density
+    def test_05_decompress_m5x5_9items_3_rows_same_density(self):
+        vc = ((0, 0), 0.0, (1.0, 11.0, 3.0, 13.0, 5.0, 15.0, 21.0, 0.0, 23.0, 0.0, 25.0), (0, 2, 0, 2, 0, 2, 4, -1, 4, -1, 4), (0, 0, 1, 0, 6))
+        m1 = MatrixSparseImplementation.decompress(vc)
+        m1_data = {(0, 0): 1.0, (0, 2): 3.0, (0, 4): 5.0, (2, 0): 11.0, (2, 2): 13.0, (2, 4): 15.0, (4, 0): 21.0, (4, 2): 23.0, (4, 4): 25.0}
         for key, value in m1_data.items():
             self.assertAlmostEqual(value, m1[Position(key[0], key[1])])
         self.assertAlmostEqual(m1.zero, vc[1])
