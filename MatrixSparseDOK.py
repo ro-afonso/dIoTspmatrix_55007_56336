@@ -1,39 +1,58 @@
+#https://www.geeksforgeeks.org/python-__iter__-__next__-converting-object-iterator/
+#https://www.pythontutorial.net/python-oop/python-__eq__/
+#https://stackoverflow.com/questions/61657240/iterating-over-dictionary-using-getitem-in-python
+
 from __future__ import annotations
 from pickle import TRUE
 import string
-from typing import Union
+from typing import OrderedDict, Union
 from MatrixSparse import *
 from Position import *
 
 spmatrix = dict[Position, float]
 
-def spmatrix_is_error(mat: MatrixSparseDOK, str: str):
+def spmatrix_is_error(mat: MatrixSparseDOK, error: str):
     if not(spmatrix_is(mat)):
-        raise ValueError(str)
+        raise ValueError(error)
 
 def spmatrix_is(mat: MatrixSparseDOK) -> bool:
-    if not(isinstance(mat, type(MatrixSparseDOK)) and len(mat) == 2) or not(isinstance(mat.zero,(float,int)) and mat[0] >= 0) or not(isinstance(mat.get_items, dict)):
+    #print("len(mat): ",len(mat))
+    #print("mat type correct?: ",isinstance(mat, MatrixSparseDOK)) 
+    #print("mat zero type correct?: ",isinstance(mat.zero, (float,int)))
+    #print("mat items dict type correct?: ",isinstance(mat._items, dict))
+    #mat._zero
+    #mat.zero
+    #removed len as mat now only has the dict and changed type(MatrixSparseDOK) to MatrixSparseDOK
+    if not(isinstance(mat, MatrixSparseDOK)) or not(isinstance(mat._zero,(float,int))) or not(isinstance(mat._items, dict)):
+        print(1)
         return False
-    for k in list(mat.get_items.keys()):
+    #print(1.5)
+    for k in mat._items.keys():
+        #print("key: ",k)
+        #print("key type: ",type(k))
         if not(position_is(k)):
+            print(3)
             return False
-        if not(isinstance(mat[k],(float)) and mat[k] != mat.zero): #,float
+        if not(isinstance(mat[k],(float,int)) and mat[k] != mat.zero): #,float
+            print(4)
             return False
+    print("spmatrix_is True")
     return True
 
 class MatrixSparseDOK(MatrixSparse):
     _items = spmatrix
-    
 
     def get_items(self) -> spmatrix:
         return self._items
 
-    def __init__(self, zero: float = 0):        
+    def __init__(self, zero: float = 0):        #removed zero: float = 0
+        #print("zero type: ",type(zero))
         if not ((isinstance(zero,float) or isinstance(zero, int)) ):
             """ and zero >= 0 """
             raise ValueError('__init__() invalid arguments')  #removed matrixsparseDOK
         """ if isinstance(zero, int):
             zero = float(zero) """
+        #print("zero init dok: ",zero)
         self._items = {}
         self._zero = zero
         #print("mat: ",self)
@@ -44,6 +63,7 @@ class MatrixSparseDOK(MatrixSparse):
 
     @zero.setter
     def zero(self, val: float):
+        print("ENTROU ZERO")
         MatrixSparse.zero.fset(self, val)
         temp_dict = self._items.copy()
         for k in temp_dict:
@@ -57,23 +77,65 @@ class MatrixSparseDOK(MatrixSparse):
         return m
 
     def __eq__(self, other: MatrixSparseDOK):
+        if isinstance(other, float):  #this is done because of test_05___eq___(self) in part2
+            return False
+        print("Entrou __eq__ spmatrix")
         spmatrix_is_error(other, "__eq__() invalid arguments") #removed matrixsparseDOK
-        temp = False
-        if self._items.keys() == other.get_items.keys():            
-            for k in list(self._items.keys()):
-                if(self[k] == 
-                other[k]):
-                    temp == True
-            
-        if temp == True and self.zero == other.zero:
-            return True
+        #temp = False
+        print("before self.keys == other.keys")
+        print(self._items.keys())
+        #Check if keys are equal
+        if self._items.keys() == other._items.keys():  #this seems to be enough, no need to check len()
+            print("self.keys == other.keys")
+            """ it = self.__iter__()
+            it2 = other.__iter__()
+            it2 = iter(self)
+            print(it)
+            print(it2)  """
+            """ for key in self:
+                print(key, self[key], end=" ")
+            print("\n")
+            for key in other:
+                print(key, other[key], end=" ") """
+            if self._items == other._items and self.zero == other.zero:
+                return True
+            """if self.zero == other.zero:
+                key_found = False
+                for key in self:
+                    #if not(self[key] == other[key]):
+                      #  return False
+                    for i in range(len(self)):
+                        if self[key] == other[i]:
+                            key_found = True
+                    if key_found == False:
+                        return False
+                    key_found = False
+                return True """
+            #Nah
+            """ for (k,v), (k2,v2) in zip(self._items(), other._items()):
+                print(k, v)
+                print(k2, v2) """
+            #Given that all keys and values are equal, lastly we check if both mat's zeros are equal
+            """ if self.zero == other.zero:
+                    return True """
+            return False
+        return False
 
+    #makes items iterable by returning a value of type dict_keyiterator that yields the dict's keys and can be used with __getitem__
     def __iter__(self):
-        pass
+        #OrderedDict
+        return iter(sorted(self._items))   #sorted is needed for equal with 2 dicts with unordered keys
 
     def __next__(self):
-        pass
-
+        print("NEXT")
+        try:
+            rv = self.thing.__getitem__(self.i)  #thing seams unecessary
+        except IndexError:
+            print("UH OH")
+            raise StopIteration
+        self.i += 1
+        return rv
+    
     def __getitem__(self, pos: Union[Position, position]) -> float:
         pos = create_pos(pos, "__getitem__() invalid arguments")
         position_is_error(pos, "__getitem__() invalid arguments")
@@ -81,8 +143,22 @@ class MatrixSparseDOK(MatrixSparse):
             return self._items[pos.get_pos()]
         else:
             return self._zero
+    #uncomment to get 20 errors in Part1!
+    """ def __getitem__(self,key):        
+        print("key type: ",key.__class__.__name__)
+        if str(key.__class__.__name__) == "Position":
+            row = key[0]
+            col = key[1]
+            newkey = (row,col)
+            newkey = key._pos
+            print("newkey Position: ",newkey)
+        else:
+            newkey = key
+            print("newkey not Position: ",newkey)
+        return self._items[newkey] """
 
-    def __setitem__(self, pos: Union[Position, position], val: Union[int, float]):
+    def __setitem__(self, pos: Union[Position, position], val: Union[int, float]):  #self,key,value
+        #print("Entrou setitem")
         pos = create_pos(pos, "__setitem__() invalid arguments")
         position_is_error(pos, "__setitem__() invalid arguments")
         """ if isinstance(val, int):    
@@ -90,10 +166,15 @@ class MatrixSparseDOK(MatrixSparse):
         if not(isinstance(val, float) or isinstance(val, int)):
             raise ValueError("__setitem__() invalid arguments")
         if val < 0:
-            raise ValueError("__setitem__() invalid arguments")    
+            raise ValueError("__setitem__() invalid arguments")
+        print()   
         self._items[pos.get_pos()] = val
         if(val == self.zero):
             del self._items[pos.get_pos()]
+        """ if key in self and isinstance(dict.__getitem__(self, key), Position):
+            dict.__getitem__(self, key).thingy = value
+        else:
+            dict.__setitem__(self, key, value) """
 
     def __len__(self) -> int:
         return len(self._items)
@@ -103,35 +184,172 @@ class MatrixSparseDOK(MatrixSparse):
             other = float(other)  """   
         if not(isinstance(other, float) or isinstance(other, int)):
             raise ValueError("_add_number() invalid arguments")
-        for k in list(self._items.keys()):
-            self[k] += other
-        self.zero(self.zero + other)
+        #print("self before add:",self)
+        #m2 = MatrixSparseDOK(self._zero+other)
+        if self.dim():
+            print(self.dim())
+            #print("self before add:",self)
+            #m2 = MatrixSparseDOK(self._zero*other)
+            m2 = self.__copy__()
+            for k in list(self._items.keys()):
+                #m2[k] = self[k] + other
+                m2[k] += other
+            print("self after add:",self)
+            print("other in add:",other)
+            #m2._zero += other  
+            return m2
+        return self
+        #print("m2 =",m2)
+        #return m2
+        #new_zero = self._zero + other
+        #print("NEW ZERO:",new_zero)
+        #self.zero(new_zero)            #This doesn't work
+        #MatrixSparse.zero.fset(self, new_zero)
+        #return 
         
-
     def _add_matrix(self, other: MatrixSparse) -> MatrixSparse:
         spmatrix_is_error(other, "_add_matrix() invalid arguments")
-        dim = self.dim()
+        if (self._zero != other._zero):
+                return False
+        """ dim = self.dim()
         dim1 = other.dim()
         y_dim = dim[1][0] - dim[0][0]
         x_dim = dim[1][1] - dim[0][1]
         if not(y_dim == dim1[1][0] - dim1[0][0] and x_dim == dim1[1][1] - dim1[0][1]):
             raise ValueError("_add_matrix() invalid arguments")
-        self.zero(self.zero() + other.zero())
+        self._zero = self._zero + other._zero#self.zero(self.zero() + other.zero())
         for row in range(y_dim + 1):
             for col in range(x_dim + 1):
-                self[Position(dim[0][0] + row, dim[0][1] + col)] += other[Position(dim1[0][0] + row, dim1[0][1] + col)]
+                if self[Position(dim[0][0] + row, dim[0][1] + col)] != self._zero or other[Position(dim1[0][0] + row, dim1[0][1] + col)] != self._zero:
+                    print("m1: ",self[Position(dim[0][0] + row, dim[0][1] + col)])
+                    self[Position(dim[0][0] + row, dim[0][1] + col)] += other[Position(dim1[0][0] + row, dim1[0][1] + col)]
+                #else:
+                    #self[Position(dim[0][0] + row, dim[0][1] + col)] = self[Position(dim[0][0] + row, dim[0][1] + col)]
+        m2 = self.__copy__()
+        return m2 """
+        self_min_dim,self_max_dim = self.dim()
+        print("self matr dim from",(self_min_dim[0],self_min_dim[1]),"to",(self_max_dim[0],self_max_dim[1]))
+        self_min_row = self_min_dim[0]
+        self_max_row = self_max_dim[0]
+        self_min_col = self_min_dim[1]
+        self_max_col = self_max_dim[1]
+
+        other_min_dim,other_max_dim = other.dim()
+        print("other matr dim from",(other_min_dim[0],other_min_dim[1]),"to",(other_max_dim[0],other_max_dim[1]))
+        other_min_row = other_min_dim[0]
+        other_max_row = other_max_dim[0]
+        other_min_col = other_min_dim[1]
+        other_max_col = other_max_dim[1]
+
+        if other_min_row > self_min_row:    #For 2nd test
+            self_max_row = other_min_row    #self matr dim from (1, 1) to (1, 3)
+                                            #other matr dim from (2, 1) to (2, 3)
+        
+        """ if other_max_row > self_max_row:   #This might be the correct one actually
+            self_max_row = other_max_row """   
+
+        m3 = MatrixSparseDOK(self._zero)
+        for row in range(self_min_row, self_max_row+1):
+                for col in range(self_min_col, self_max_col+1):                    
+                    self_value = self.__getitem__((row,col))
+                    other_value = other.__getitem__((row,col))
+                    if self_value == self._zero:
+                        self_value = 0
+                    if other_value == other._zero:
+                        other_value = 0                    
+                    m3[(row,col)] = self_value + other_value
+                    print("row,col = ",(row,col))
+                    print("self value = ",self.__getitem__((row,col)))
+                    print("other value =",other.__getitem__((row,col)))
+                    print("m3 value =",m3[(row,col)])
+        print("FINAL m3:",m3)
+        return m3
 
     def _mul_number(self, other: Union[int, float]) -> Matrix:
         """ if isinstance(other, int):    
             other = float(other)   """  
-        if not(isinstance(other, float) or isinstance(other, int)):
+        """ if not(isinstance(other, float) or isinstance(other, int)):
             raise ValueError("_mul_number() invalid arguments")
         for k in list(self._items.keys()):
             self[k] *= other
-        self.zero(self.zero * other)
+        self.zero(self.zero * other) """
+        if not(isinstance(other, float) or isinstance(other, int)):
+            raise ValueError("_add_number() invalid arguments")
+        if self.dim():
+            print("self before add:",self)
+            #m2 = MatrixSparseDOK(self._zero*other)
+            m2 = self.__copy__()
+            for k in list(self._items.keys()):
+                #m2[k] = self[k] + other
+                m2[k] *= other
+            print("self after add:",self)
+            print("other in add:",other)
+            m2._zero *= other  
+            return m2
+        return self
 
     def _mul_matrix(self, other: MatrixSparse) -> MatrixSparse:
-        pass
+        spmatrix_is_error(other, "_mul_matrix() invalid arguments")
+        if (self._zero != other._zero):
+                return False
+        self_min_dim,self_max_dim = self.dim()
+        print("self matr dim from",(self_min_dim[0],self_min_dim[1]),"to",(self_max_dim[0],self_max_dim[1]))
+        self_min_row = self_min_dim[0]
+        self_max_row = self_max_dim[0]
+        self_min_col = self_min_dim[1]
+        self_max_col = self_max_dim[1]
+
+        other_min_dim,other_max_dim = other.dim()
+        print("other matr dim from",(other_min_dim[0],other_min_dim[1]),"to",(other_max_dim[0],other_max_dim[1]))
+        other_min_row = other_min_dim[0]
+        other_max_row = other_max_dim[0]
+        other_min_col = other_min_dim[1]
+        other_max_col = other_max_dim[1]
+
+        """ if other_max_row > self_max_row:    #For 2nd test
+            self_max_row = other_max_row    #self matr dim from (1, 1) to (1, 3)
+                                            #other matr dim from (2, 1) to (2, 3)
+
+        if other_max_col > self_max_col:    #For 2nd test
+            self_max_col = other_max_col
+
+        print("self min row:",self_min_row)
+        print("self max row",self_max_row)
+        print("other min row:",other_min_row)
+        print("other max row:",other_max_row)
+
+        print("self min col:",self_min_col)
+        print("self max col",self_max_col)
+        print("other min col:",other_min_col)
+        print("other max col:",other_max_col) """
+
+        #When we multiply 2 matrices:
+        #The number of columns of the 1st matrix must equal the number of rows of the 2nd matrix
+        #And the result will have the same number of rows as the 1st matrix,
+        #and the same number of columns as the 2nd matrix
+
+        m3 = MatrixSparseDOK(self._zero)
+        for row in range(self_min_row, self_max_row+1):
+            print("row huh:",row)
+            for col in range(other_min_col, other_max_col+1):                    
+                row_intermediate = self.row(row)
+                """ print("full row! :",row_intermediate)
+                print("each value of row!: ",row_intermediate[row]) """
+                self_value = self.__getitem__((row,col))
+                other_value = other.__getitem__((row,col))
+                if self_value == self._zero:
+                    self_value = 0
+                if other_value == other._zero:
+                    other_value = 0                    
+                m3[(row,col)] = self_value * other_value
+                print("row,col = ",(row,col))
+                print("full row! :",row_intermediate)
+                print("each value of row!: ",row_intermediate[row,col])
+                print("self value = ",self.__getitem__((row,col)))
+                print("other value =",other.__getitem__((row,col)))
+                print("m3 value =",m3[(row,col)])
+        print("FINAL m3:",m3)
+        return m3
 
     def dim(self) -> tuple[Position, ...]:
         if(len(self._items) == 0):
@@ -186,7 +404,28 @@ class MatrixSparseDOK(MatrixSparse):
         pass
 
     def transpose(self) -> MatrixSparseDOK:
-        pass
+        print("self.dim =",self.dim())
+        if self.dim():                      #if self.dim() returns () then the matrix has no values, so no transpose
+            min_dim,max_dim = self.dim()
+            print("matr dim from",(min_dim[0],min_dim[1]),"to",(max_dim[0],max_dim[1]))
+            min_row = min_dim[0]
+            max_row = max_dim[0]
+            min_col = min_dim[1]
+            max_col = max_dim[1]
+            """ total_rows = max_dim[0] - min_dim[0] + 1
+            total_collumns = max_dim[1] - min_dim[1] + 1
+            print("total_rows =",total_rows)
+            print("total_collumns =",total_collumns) """
+            m_transposed = MatrixSparseDOK(self._zero)
+            for row in range(min_row, max_row+1):
+                for col in range(min_col, max_col+1):
+                    print("get item transposed: ",self.__getitem__((row,col)))
+                    #if self.__getitem__((row,col)) != self._zero:                  #is this if necessary?
+                    #    m_transposed[(row,col)] = self.__getitem__((row,col))      #it hasn't been so far...
+                    m_transposed[(col,row)] = self.__getitem__((row,col))
+            print("final m_transposed:\n",m_transposed)
+            return m_transposed
+        return self
 
     def compress(self) -> compressed:
         pass
@@ -207,3 +446,23 @@ class MatrixSparseDOK(MatrixSparse):
         ys = [k[1] for k in keys]
         if not(max(xs) == max(ys)):
             raise ValueError(str1)
+
+""" mat = MatrixSparseDOK()
+print("len test: ",len(mat))
+print("mat teste: ",mat) """
+
+""" m1 = MatrixSparseDOK()
+print("HUH")
+m1_data = {(2, 3): 2.3, (1, 3): 1.3, (2, 2): 2.2, (1, 2): 1.2, (2, 1): 2.1, (1, 1): 1.1}
+for key, value in m1_data.items():
+    m1[Position(key[0], key[1])] = value
+print("HUH2")
+test = {(1, 1): 1.1, (1, 2): 1.2, (1, 3): 1.3, (2, 1): 2.1, (2, 2): 2.2, (2, 3): 2.3}
+print(m1)
+test_list = list(test)
+i = 0
+for pos in m1:
+    #print(m1[pos])
+    #print(m1_data[test_list[i]])
+    m1.__eq__(m1_data[test_list[i]])
+    i += 1 """

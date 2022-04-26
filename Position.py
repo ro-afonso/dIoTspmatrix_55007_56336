@@ -2,7 +2,7 @@ from __future__ import annotations
 from ctypes import Union
 from turtle import pos
 
-position = tuple[int, int]
+#position = tuple[int, int]
 
 
 class Position:
@@ -35,6 +35,11 @@ def position_is_error(pos: Position, str: str):
 
 def position_is(pos: Position) -> bool:
     #print("pos type: ",pos.__class__.__name__)
+    #if it's a tuple with only 2 int values then convert to Position type
+    if isinstance(pos,tuple) and len(pos) == 2:
+        row,col = pos
+        if isinstance(row, int) and row >= 0 and isinstance(col, int) and col >= 0:
+            return True
     if not(isinstance(pos,Position)):
         #print(1)
         return False
@@ -54,3 +59,6 @@ def create_pos(pos: Union[tuple, Position], str: str) -> Position:
     elif not(isinstance(pos, Position)):
         raise ValueError(str)
     return p 
+
+
+#Position(1, 2, 3)

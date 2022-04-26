@@ -61,7 +61,7 @@ class Matrix(ABC):
 
     def __str__(self):
         dim = self.dim()
-        strs = '';
+        strs = ''
         try:
             for x in range(dim[0][0],dim[1][0] + 1):
                 for y in range(dim[0][1],dim[1][1] + 1):
