@@ -5,7 +5,7 @@
 from __future__ import annotations
 from pickle import TRUE
 import string
-from typing import OrderedDict, Union
+from typing import OrderedDict, Union, final
 from MatrixSparse import *
 from Position import *
 
@@ -290,8 +290,9 @@ class MatrixSparseDOK(MatrixSparse):
 
     def _mul_matrix(self, other: MatrixSparse) -> MatrixSparse:
         spmatrix_is_error(other, "_mul_matrix() invalid arguments")
+        #TODO verificar se as matrizes sao multiplicaveis
         if (self._zero != other._zero):
-                return False
+                raise ValueError('_mul_matrix() incompatible matrices')
         self_min_dim,self_max_dim = self.dim()
         print("self matr dim from",(self_min_dim[0],self_min_dim[1]),"to",(self_max_dim[0],self_max_dim[1]))
         self_min_row = self_min_dim[0]
@@ -329,26 +330,22 @@ class MatrixSparseDOK(MatrixSparse):
         #and the same number of columns as the 2nd matrix
 
         m3 = MatrixSparseDOK(self._zero)
-        for row in range(self_min_row, self_max_row+1):
-            print("row huh:",row)
-            for col in range(other_min_col, other_max_col+1):                    
-                row_intermediate = self.row(row)
-                """ print("full row! :",row_intermediate)
-                print("each value of row!: ",row_intermediate[row]) """
-                self_value = self.__getitem__((row,col))
-                other_value = other.__getitem__((row,col))
-                if self_value == self._zero:
-                    self_value = 0
-                if other_value == other._zero:
-                    other_value = 0                    
-                m3[(row,col)] = self_value * other_value
-                print("row,col = ",(row,col))
-                print("full row! :",row_intermediate)
-                print("each value of row!: ",row_intermediate[row,col])
-                print("self value = ",self.__getitem__((row,col)))
-                print("other value =",other.__getitem__((row,col)))
-                print("m3 value =",m3[(row,col)])
-        print("FINAL m3:",m3)
+        for row in range(self_max_row-self_min_row + 1):
+            for col in range(other_max_col-other_min_col + 1):
+                final_value = 0
+                num = 0
+                for move in range(other_max_row-other_min_row + 1):
+                    self_value = self.__getitem__(Position(row + self_min_row, move+self_min_col))
+                    other_value = other.__getitem__(Position(move+other_min_row ,col+ other_min_col))  
+                    if self_value == self._zero:
+                        self_value = 0
+                        num+=1
+                    if other_value == other._zero:
+                        other_value = 0   
+                        num+=1   
+                    final_value += self_value * other_value
+                if num != other_max_row-other_min_row + 1:
+                    m3[Position(row+self_min_row,col+other_min_col)] = final_value
         return m3
 
     def dim(self) -> tuple[Position, ...]:
@@ -401,7 +398,12 @@ class MatrixSparseDOK(MatrixSparse):
 
     @staticmethod
     def eye(size: int, unitary: float = 1.0, zero: float = 0.0) -> MatrixSparseDOK:
-        pass
+        if not(isinstance(size, int) and size >= 0 and isinstance(unitary,(float,int)) and isinstance(zero,(float,int))):
+            raise ValueError('eye() invalid parameters')
+        m1 = MatrixSparseDOK(zero)
+        for i in range(size):
+            m1[Position(i,i)] = unitary
+        return m1
 
     def transpose(self) -> MatrixSparseDOK:
         print("self.dim =",self.dim())

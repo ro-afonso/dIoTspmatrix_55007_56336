@@ -32,8 +32,11 @@ class Matrix(ABC):
     def __add__(self, other):
         if isinstance(other, (int, float)):
             return self._add_number(other)
+        #TODO change this to transform into matrix
         if isinstance(other, Matrix):
-            return self._add_matrix(other)
+            if other.zero == self.zero:
+                return self._add_matrix(other)
+            raise ValueError('_add_matrix() incompatible matrices')
         raise ValueError('_add__ invalid argument')
 
     @abstractmethod
@@ -60,8 +63,13 @@ class Matrix(ABC):
         raise NotImplementedError
 
     def __str__(self):
-        dim = self.dim()
         strs = ''
+        try:
+            dim = self.dim()
+            if(dim[0][0] == 1):
+                pass
+        except IndexError as error:
+            return strs
         try:
             for x in range(dim[0][0],dim[1][0] + 1):
                 for y in range(dim[0][1],dim[1][1] + 1):

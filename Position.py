@@ -23,11 +23,14 @@ class Position:
 
     def __eq__(self, other: Position):  #Devemos adicionar -> Bool ?
         #print(self, "Esta é a pos:",other)
-        position_is_error(other, '__eq__() invalid arguments')
+        other = create_pos(other, '__eq__() invalid arguments')
         return self._pos == other._pos   #usamos other._pos para não comparar tuple com object Position
 
     def get_pos(self)-> tuple(int,int):
         return self._pos
+
+    def __hash__(self) -> int:
+        return hash(self._pos)
 
 def position_is_error(pos: Position, str: str):
     if not(position_is(pos)):
