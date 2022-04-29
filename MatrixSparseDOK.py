@@ -438,7 +438,65 @@ class MatrixSparseDOK(MatrixSparse):
 
     @staticmethod
     def decompress(compressed_vector: compressed) -> MatrixSparse:
-        pass
+        #TODO Check if compressed_vector has a valid format
+        """ for i in range(len(compressed_vector)):
+            print(compressed_vector[i]) """
+        mat_dc = MatrixSparseDOK(compressed_vector[1]) #create mat with compressed_vector's zero
+        first_row = compressed_vector[0][0]
+        first_col = compressed_vector[0][1]
+        print("first col:",first_col)
+        additional_remove = False
+        rows_list = list(compressed_vector[3])
+        offset_list = list(compressed_vector[4])
+        sorted_rows_list = sorted(list(filter((-1).__ne__, rows_list)))
+        print("sorted set offset values: ",sorted_rows_list)
+        while(len(rows_list) > 0):
+            print("BEGIN rows_list:",rows_list)
+            highest_density_row = max(set(rows_list), key = rows_list.count)
+            print("highest density row: ",highest_density_row)
+            if highest_density_row == -1:
+                #ignore -1 and get next highest value in rows_list
+                temp_list = rows_list.copy()
+                temp_list = list(filter((-1).__ne__, temp_list))
+                #After the filter, if temp_list is empty, then the mat_dc is complete, so we return it
+                if(temp_list):                    
+                    highest_density_row = max(set(temp_list), key = temp_list.count)
+                    #at the end of this cycle, we remove both -1 and highest value
+                    additional_remove = True
+                else:
+                    return mat_dc
+                
+            #start with highest density row
+            #compressed_vector[3][col] is row while col is collumn
+            print("highest:",highest_density_row)
+            print("offset_list:",offset_list)
+            print("sorted set offset values: ",sorted_rows_list)
+            offset_value = offset_list[highest_density_row - first_row]
+            print("offset value:",offset_value)
+            for col in range(len(compressed_vector[3])):
+                #print("HUH: HUH")
+                print("cv col",col,"=",compressed_vector[3][col])
+                
+                if compressed_vector[3][col] == highest_density_row:
+                    print("col:",col)
+                    print("first col:",first_col)
+                    print("offset value:",offset_value)                    
+                    print("final col:",col+first_col-offset_value)
+                    print("value:",compressed_vector[2][col])
+                    print("row:",compressed_vector[3][col])
+                    mat_dc[compressed_vector[3][col],col+first_col-offset_value] = compressed_vector[2][col]
+            print("mat_dc:")
+            print(mat_dc)
+            #remove highest_density_row from rows_list
+            rows_list = list(filter((highest_density_row).__ne__, rows_list))
+            #if -1 was found, remove it
+            if additional_remove:
+                rows_list = list(filter((-1).__ne__, rows_list))
+                additional_remove = False
+            #remove last value of offset_list using pop()
+            #offset_list.pop()
+
+        return mat_dc
 
     def spmatrix_is_square_error(self, str1: str):
         if not(isinstance(str1, str)):
