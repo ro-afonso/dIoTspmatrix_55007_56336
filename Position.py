@@ -1,6 +1,5 @@
 from __future__ import annotations
-from ctypes import Union
-from turtle import pos
+from typing import Union
 
 #position = tuple[int, int]
 
