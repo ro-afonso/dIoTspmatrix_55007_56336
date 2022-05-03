@@ -432,7 +432,44 @@ class MatrixSparseDOK(MatrixSparse):
 
     @staticmethod
     def doi(compressed_vector: compressed, pos: Position) -> float:
-        pass
+        #TODO Check if compressed_vector has a valid format
+        #print("pos doi:",pos[0],pos[1])
+        """ for i in range(len(compressed_vector)):
+            print(compressed_vector[i]) """
+        #mat_dc = MatrixSparseDOK(compressed_vector[1]) #create mat with compressed_vector's zero
+        first_row = compressed_vector[0][0]
+        first_col = compressed_vector[0][1]
+        print("first col:",first_col)
+        additional_remove = False
+        values_list = list(compressed_vector[2])
+        rows_list = list(compressed_vector[3])
+        offset_list = list(compressed_vector[4])
+        sorted_rows_list = sorted(list(filter((-1).__ne__, rows_list)))
+        #print("values list:",values_list)
+        #print("rows list:",rows_list)
+        #print("sorted_rows_list:",sorted_rows_list)
+        #print("offset list:",offset_list)
+        #print("pos doi:",pos[0],pos[1])
+        highest_density_row = max(set(rows_list), key = rows_list.count)
+        #print("highest density row: ",highest_density_row)
+        offset_value = offset_list[pos[0]-first_row]
+        #print("offset value:",offset_value)
+        #print("\n")
+        final_pos = (pos[0],pos[1]+offset_value)
+        #if pos[0] in rows_list:
+        for col in range(len(values_list)+1):
+            if rows_list[col] == pos[0]:
+                print("pos doi:",pos[0],pos[1])
+                print("col",col)
+                print("rows_list value:",rows_list[col])
+                print("rows_list[col] == pos[0]")
+                if col == pos[1]+offset_value:
+                    
+                    print("final value:",values_list[col])
+                    return values_list[col]
+        print("returned zero")
+        print("\n")
+        return compressed_vector[1]
 
     @staticmethod
     def decompress(compressed_vector: compressed) -> MatrixSparse:
