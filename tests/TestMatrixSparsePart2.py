@@ -604,12 +604,16 @@ class TestMatrixSparseCompress(unittest.TestCase):
     # compress basic test non-optimal compression
     def test_02_compress_m3x5_5items_with_non_optimal_compression(self):
         m1 = MatrixSparseImplementation()
-        m1_data = {(6, 2): 6.2, (6, 3): 6.3, (7, 4): 7.4, (8, 1): 8.1, (8, 2): 8.2, (8, 5): 8.5}
+        m1_data = {(6, 2): 6.2, (6, 4): 6.4, (7, 4): 7.4, (8, 1): 8.1, (8, 2): 8.2, (8, 5): 8.5}
         for key, value in m1_data.items():
             m1[Position(key[0], key[1])] = value
         vc = m1.compress()
-        res = ((6, 1), 0.0, (8.1, 8.2, 6.2, 6.3, 8.5, 7.4, 0.0), (8, 8, 6, 6, 8, 7, -1), (1, 2, 0))
-        self.assertEqual(vc, res)
+        res1 = ((6, 1), 0.0, (8.1, 8.2, 0.0, 6.2, 8.5, 6.4, 7.4), (8, 8, -1, 6, 8, 6, 7), (2, 3, 0))
+        res2 = ((6, 1), 0.0, (8.1, 8.2, 0.0, 6.2, 8.5, 6.4, 7.4, 0.0), (8, 8, -1, 6, 8, 6, 7, -1), (2, 3, 0))
+        if vc == res1:
+            self.assertEqual(vc, res1)
+        else:
+            self.assertEqual(vc, res2)
 
     # compress test one-column matrix
     def test_03_compress_m4x1_2items(self):
@@ -661,10 +665,10 @@ class TestMatrixSparseDoi(unittest.TestCase):
     # doi basic test from non-optimally compressed matrix
     def test_02_doi_m3x5_5items_with_non_optimal_compression(self):
         m1 = MatrixSparseImplementation()
-        m1_data = {(6, 2): 6.2, (6, 3): 6.3, (7, 4): 7.4, (8, 1): 8.1, (8, 2): 8.2, (8, 5): 8.5}
+        m1_data = {(6, 2): 6.2, (6, 4): 6.4, (7, 4): 7.4, (8, 1): 8.1, (8, 2): 8.2, (8, 5): 8.5}
         for key, value in m1_data.items():
             m1[Position(key[0], key[1])] = value
-        vc = ((6, 1), 0.0, (8.1, 8.2, 6.2, 6.3, 8.5, 7.4, 0.0), (8, 8, 6, 6, 8, 7, -1), (1, 2, 0))
+        vc = ((6, 1), 0.0, (8.1, 8.2, 0.0, 6.2, 8.5, 6.4, 7.4), (8, 8, -1, 6, 8, 6, 7), (2, 3, 0))
         dim = m1.dim()
         for r in range(dim[0][0], dim[1][0] + 1):
             for c in range(dim[0][1], dim[1][1] + 1):
@@ -696,7 +700,7 @@ class TestMatrixSparseDoi(unittest.TestCase):
 
     # doi test invalid compressed vector due to invalid upper left position
     def test_05_doi_invalid_compressed_vector_invalid_uppper_left_corner_type(self):
-        vc = ((6, 1, 1), 0.0, (8.1, 8.2, 6.2, 6.3, 8.5, 7.4, 0.0), (8, 8, 6, 6, 8, 7, -1, -1), (1, 2, 0))
+        vc = ((6, 1, 1), 0.0, (8.1, 8.2, 0.0, 6.2, 8.5, 6.4, 7.4), (8, 8, -1, 6, 8, 6, 7), (2, 3, 0))
         try:
             self.assertAlmostEqual(MatrixSparseImplementation.doi(vc, Position(6, 2)), 6.2)
             self.assertTrue(False, "Failed to Raise Exception")
@@ -718,9 +722,9 @@ class TestMatrixSparseDecompress(unittest.TestCase):
 
     # decompress basic test from non-optimally compressed matrix
     def test_02_decompress_m3x5_5items_with_non_optimal_compression(self):
-        vc = ((6, 1), 0.0, (8.1, 8.2, 6.2, 6.3, 8.5, 7.4, 0.0), (8, 8, 6, 6, 8, 7, -1), (1, 2, 0))
+        vc = ((6, 1), 0.0, (8.1, 8.2, 0.0, 6.2, 8.5, 6.4, 7.4), (8, 8, -1, 6, 8, 6, 7), (2, 3, 0))
         m1 = MatrixSparseImplementation.decompress(vc)
-        m1_data = {(6, 2): 6.2, (6, 3): 6.3, (7, 4): 7.4, (8, 1): 8.1, (8, 2): 8.2, (8, 5): 8.5}
+        m1_data = {(6, 2): 6.2, (6, 4): 6.4, (7, 4): 7.4, (8, 1): 8.1, (8, 2): 8.2, (8, 5): 8.5}
         for key, value in m1_data.items():
             self.assertAlmostEqual(value, m1[Position(key[0], key[1])])
         self.assertAlmostEqual(m1.zero, vc[1])
