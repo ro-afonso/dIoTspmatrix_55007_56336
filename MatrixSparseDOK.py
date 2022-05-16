@@ -1,6 +1,7 @@
 #https://www.geeksforgeeks.org/python-__iter__-__next__-converting-object-iterator/
 #https://www.pythontutorial.net/python-oop/python-__eq__/
 #https://stackoverflow.com/questions/61657240/iterating-over-dictionary-using-getitem-in-python
+#https://datagy.io/python-replace-item-in-list/
 
 from __future__ import annotations
 from typing import OrderedDict, Union, final
@@ -428,11 +429,82 @@ class MatrixSparseDOK(MatrixSparse):
         return self
 
     def compress(self) -> compressed:
-        pass
+        min_dim,max_dim = self.dim()
+        print("matr dim from",(min_dim[0],min_dim[1]),"to",(max_dim[0],max_dim[1]))
+        min_row = min_dim[0]
+        max_row = max_dim[0]
+        min_col = min_dim[1]
+        max_col = max_dim[1]
+        #total_nr_rows = max_row-min_row
+        final_values_list = []
+        final_rows_list = []
+        offset_list = []
+        rows_list = []
+        for row in range(min_row, max_row+1):
+            rows_list.append(row)
+        most_dense_row = None
+        while(rows_list):
+            for row in rows_list:                
+                temp_row_list_values = list(filter((self._zero).__ne__, self.row(row)))
+                if most_dense_row == None:
+                    most_dense_row = row
+                elif len(temp_row_list_values) > len(list(filter((self._zero).__ne__, self.row(most_dense_row)))):
+                    most_dense_row = row
+            print("most_dense_row:",most_dense_row)
+
+            if not(final_values_list):
+                final_values_list = self.row(most_dense_row).__copy__()
+                i = 0
+                for value in final_values_list:
+                    if value != self._zero:
+                        final_rows_list.insert(i,most_dense_row)
+                    else:
+                        final_rows_list.insert(i,self._zero)
+                    i+=1
+                offset_list.insert(most_dense_row,0)
+                print("final_values_list:\n",final_values_list)
+                print("final_rows_list:\n",final_rows_list)
+                print("offset_list:\n",offset_list)   
+                rows_list.remove(most_dense_row)
+                most_dense_row = None
+            else:            
+                done = False
+                cols_free = True
+                temp_offset = 0
+                keys_list = self._items.keys()
+                while not(done):               
+                    for k in keys_list:
+                        if k[0] == most_dense_row:
+                            print("pos",(k[0],k[1]))
+                            print("k",k[1])
+                            print("to",temp_offset)
+                            print("m",min_col)
+                            print("value",final_values_list[0,k[1]+temp_offset-min_col])
+                            if final_values_list[0,k[1]+temp_offset-min_col] != self._zero:
+                                cols_free = False
+                    if cols_free:
+                        done = True
+                    else:
+                        temp_offset+=1
+                i = 0
+                for k in keys_list:
+                        if k[0] == most_dense_row:
+                            final_values_list[max_row,k[1]+temp_offset] = self.__getitem__((k[0],k[1]))
+                            final_rows_list.insert(k[1]+temp_offset-min_col,most_dense_row)
+                offset_list.insert(most_dense_row,temp_offset)
+                print("final_values_list:\n",final_values_list)
+                print("final_rows_list:\n",final_rows_list)
+                print("offset_list:\n",offset_list)
+                rows_list.remove(most_dense_row)
+                most_dense_row = None
+        for value in final_values_list:
+            print()
+        print("Final result:\n",((min_row,min_col),float(self._zero),tuple(final_values_list) ,tuple(final_rows_list),tuple(offset_list)))   
+        return 0
 
     @staticmethod
     def doi(compressed_vector: compressed, pos: Position) -> float:
-        #TODO Check if compressed_vector has a valid format
+        #TODO Check if compressed_vector has a valid format with isinstance or something
         if not(position_is(compressed_vector[0])):
             raise ValueError('doi() invalid parameters')
         #print("pos doi:",pos[0],pos[1])
@@ -477,7 +549,7 @@ class MatrixSparseDOK(MatrixSparse):
 
     @staticmethod
     def decompress(compressed_vector: compressed) -> MatrixSparse:
-        #TODO Check if compressed_vector has a valid format
+        #TODO Check if compressed_vector has a valid format with ininstance or something
         """ for i in range(len(compressed_vector)):
             print(compressed_vector[i]) """
         mat_dc = MatrixSparseDOK(compressed_vector[1]) #create mat with compressed_vector's zero
@@ -565,3 +637,14 @@ for pos in m1:
     #print(m1_data[test_list[i]])
     m1.__eq__(m1_data[test_list[i]])
     i += 1 """
+
+
+""" test_list = []
+test_list.insert(1,1)
+test_list.insert(2,2)
+test_list.insert(0,0)
+print(test_list) """
+
+test_list = [8.1,2.2]
+print(test_list)
+print(tuple(test_list))
