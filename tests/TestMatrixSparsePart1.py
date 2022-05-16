@@ -1,8 +1,7 @@
 import unittest
+import sys
 import copy
 from MatrixSparseDOK import *
-import io
-import sys
 
 MatrixSparseImplementation = MatrixSparseDOK
 
@@ -280,12 +279,10 @@ class TestMatrixSparseZeroSetter(unittest.TestCase):
         m[Position(4, 4)] = 4.4
         m[Position(5, 5)] = 5.5
         m.zero = 1.1
-        m.zero = 2.2    
+        m.zero = 2.2
         m.zero = 3.3
         m.zero = 4.4
-
         m.zero = 5.5
-        
         self.assertEqual(5.5, m.zero)
         self.assertEqual(0, len(m))
 
@@ -333,7 +330,7 @@ class TestMatrixSparseDim(unittest.TestCase):
         m[Position(2, 1)] = 2.1
         m[Position(2, 3)] = 2.3
         m[Position(3, 2)] = 3.2
-        dim = m.dim()      
+        dim = m.dim()
         self.assertEqual(Position(1, 1), dim[0])
         self.assertEqual(Position(3, 3), dim[1])
 
