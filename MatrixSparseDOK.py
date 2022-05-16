@@ -429,6 +429,8 @@ class MatrixSparseDOK(MatrixSparse):
         return self
 
     def compress(self) -> compressed:
+        if self.sparsity() < 0.5:
+            raise ValueError('compress() dense matrix')
         min_dim,max_dim = self.dim()
         print("matr dim from",(min_dim[0],min_dim[1]),"to",(max_dim[0],max_dim[1]))
         min_row = min_dim[0]
@@ -442,6 +444,7 @@ class MatrixSparseDOK(MatrixSparse):
         rows_list = []
         for row in range(min_row, max_row+1):
             rows_list.append(row)
+            offset_list.append(0)
         most_dense_row = None
         while(rows_list):
             for row in rows_list:                
@@ -453,7 +456,9 @@ class MatrixSparseDOK(MatrixSparse):
             print("most_dense_row:",most_dense_row)
 
             if not(final_values_list):
-                final_values_list = self.row(most_dense_row).__copy__()
+                for col in range(min_col,max_col+1):
+                    final_values_list.append(float(self[most_dense_row,col]))
+                #final_values_list = self.row(most_dense_row).__copy__()
                 i = 0
                 for value in final_values_list:
                     if value != self._zero:
@@ -461,7 +466,7 @@ class MatrixSparseDOK(MatrixSparse):
                     else:
                         final_rows_list.insert(i,self._zero)
                     i+=1
-                offset_list.insert(most_dense_row,0)
+                #offset_list.insert(most_dense_row,0)
                 print("final_values_list:\n",final_values_list)
                 print("final_rows_list:\n",final_rows_list)
                 print("offset_list:\n",offset_list)   
@@ -470,37 +475,66 @@ class MatrixSparseDOK(MatrixSparse):
             else:            
                 done = False
                 cols_free = True
+                extra_cols = False
                 temp_offset = 0
                 keys_list = self._items.keys()
-                while not(done):               
+                while not(done):     
+                    temp_final_values_list = final_values_list.copy()
+                    temp_final_rows_list = final_rows_list.copy()
                     for k in keys_list:
                         if k[0] == most_dense_row:
                             print("pos",(k[0],k[1]))
                             print("k",k[1])
                             print("to",temp_offset)
-                            print("m",min_col)
-                            print("value",final_values_list[0,k[1]+temp_offset-min_col])
-                            if final_values_list[0,k[1]+temp_offset-min_col] != self._zero:
+                            print("m",min_col)                            
+                            if k[1]+temp_offset-min_col > len(final_values_list)-1:                                
+                                temp_final_values_list.insert(k[1]+temp_offset-min_col,self.__getitem__((k[0],k[1])))
+                                temp_final_rows_list.insert(k[1]+temp_offset-min_col,most_dense_row)
+                                print("value",temp_final_values_list[k[1]+temp_offset-min_col])
+                                print("rows",temp_final_rows_list[k[1]+temp_offset-min_col])
+                                extra_cols = True
+                            elif final_values_list[k[1]+temp_offset-min_col] != self._zero:
+                                print("value",final_values_list[k[1]+temp_offset-min_col])
                                 cols_free = False
+                            else:
+                                print("value",final_values_list[k[1]+temp_offset-min_col])
+                                temp_final_values_list[k[1]+temp_offset-min_col] = self.__getitem__((k[0],k[1]))
+                                temp_final_rows_list[k[1]+temp_offset-min_col] = most_dense_row
                     if cols_free:
                         done = True
                     else:
                         temp_offset+=1
-                i = 0
-                for k in keys_list:
-                        if k[0] == most_dense_row:
-                            final_values_list[max_row,k[1]+temp_offset] = self.__getitem__((k[0],k[1]))
-                            final_rows_list.insert(k[1]+temp_offset-min_col,most_dense_row)
-                offset_list.insert(most_dense_row,temp_offset)
+                        cols_free = True
+                        extra_cols = False
+                print("temp_final_values_list:\n",temp_final_values_list)
+                print("temp_final_rows_list:\n",temp_final_rows_list)
+                if extra_cols:
+                    final_values_list = temp_final_values_list.copy()
+                    final_rows_list = temp_final_rows_list.copy()
+                else:
+                    for k in keys_list:
+                            if k[0] == most_dense_row:
+                                """ print("aft pos",(k[0],k[1]))
+                                print("aft k",k[1])
+                                print("aft to",temp_offset)
+                                print("aft m",min_col) """
+                                final_values_list[k[1]+temp_offset-min_col] = self.__getitem__((k[0],k[1]))
+                                final_rows_list[k[1]+temp_offset-min_col] = most_dense_row                    
+                offset_list[most_dense_row-min_row] = temp_offset
                 print("final_values_list:\n",final_values_list)
                 print("final_rows_list:\n",final_rows_list)
                 print("offset_list:\n",offset_list)
                 rows_list.remove(most_dense_row)
                 most_dense_row = None
-        for value in final_values_list:
-            print()
-        print("Final result:\n",((min_row,min_col),float(self._zero),tuple(final_values_list) ,tuple(final_rows_list),tuple(offset_list)))   
-        return 0
+        for i in range(len(final_rows_list)):
+            if final_rows_list[i] == self._zero:
+                final_rows_list[i] = -1
+        print("final_values_list:\n",final_values_list)
+        print("final_rows_list:\n",final_rows_list)
+        print("offset_list:\n",offset_list)
+        mat_c = ((min_row,min_col),float(self._zero),tuple(final_values_list) ,tuple(final_rows_list),tuple(offset_list))
+        print("Final result:\n",mat_c)   
+        return mat_c
 
     @staticmethod
     def doi(compressed_vector: compressed, pos: Position) -> float:

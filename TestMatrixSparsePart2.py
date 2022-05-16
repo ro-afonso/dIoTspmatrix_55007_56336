@@ -4,7 +4,7 @@ from MatrixSparseDOK import *
 MatrixSparseImplementation = MatrixSparseDOK
 
 
-""" class TestMatrixSparseEqual(unittest.TestCase):
+class TestMatrixSparseEqual(unittest.TestCase):
 
     # __eq__ basic test
     def test_01___eq___m2x3_6items_with_itself(self):
@@ -586,7 +586,7 @@ class TestMatrixSparseEye(unittest.TestCase):
             MatrixSparseImplementation.eye(-1, 4, 8)
             self.assertTrue(False, "Failed to Raise Exception")
         except ValueError as error:
-            assert str(error) == 'eye() invalid parameters' """
+            assert str(error) == 'eye() invalid parameters'
 
 
 class TestMatrixSparseCompress(unittest.TestCase):
@@ -601,7 +601,7 @@ class TestMatrixSparseCompress(unittest.TestCase):
         res = ((6, 1), 0.0, (8.1, 8.2, 6.3, 7.4, 8.5), (8, 8, 6, 7, 8), (0, 0, 0))
         self.assertEqual(vc, res)
 
-    """ # compress basic test non-optimal compression
+    # compress basic test non-optimal compression
     def test_02_compress_m3x5_5items_with_non_optimal_compression(self):
         m1 = MatrixSparseImplementation()
         m1_data = {(6, 2): 6.2, (6, 4): 6.4, (7, 4): 7.4, (8, 1): 8.1, (8, 2): 8.2, (8, 5): 8.5}
@@ -645,10 +645,10 @@ class TestMatrixSparseCompress(unittest.TestCase):
             vc = m1.compress()
             self.assertTrue(False, "Failed to Raise Exception")
         except ValueError as error:
-            assert str(error) == 'compress() dense matrix' """
+            assert str(error) == 'compress() dense matrix'
 
 
-""" class TestMatrixSparseDoi(unittest.TestCase):
+class TestMatrixSparseDoi(unittest.TestCase):
 
     # doi basic test from optimally compressed matrix
     def test_01_doi_m3x5_5items_with_optimal_compression(self):
@@ -758,7 +758,7 @@ class TestMatrixSparseDecompress(unittest.TestCase):
         for key, value in m1_data.items():
             self.assertAlmostEqual(value, m1[Position(key[0], key[1])])
         self.assertAlmostEqual(m1.zero, vc[1])
-        self.assertEqual(len(m1_data), len(m1)) """
+        self.assertEqual(len(m1_data), len(m1))
 
 
 if __name__ == '__main__':
