@@ -68,7 +68,7 @@ class TestMatrixSparseIter(unittest.TestCase):
     # __iter__ basic test for matrix with non-default zero
     def test_02___iter___m2x3_6items_zero_as_3(self):
         m1 = MatrixSparseImplementation(3.0)
-        m1_data = {(1, 1): 1.1, (1, 2): 1.2, (1, 3): 1.3, (2, 1): 2.1, (2, 2): 2.2, (2, 3): 2.3}
+        m1_data = {(1, 1): 1.1, (1, 2): 1.2, (1, 3): 1.4, (2, 1): 2.1, (2, 2): 2.2, (2, 3): 2.3}
         for key, value in m1_data.items():
             m1[Position(key[0], key[1])] = value
         test = {(1, 1): 1.1, (1, 2): 1.2, (1, 3): 1.3, (2, 1): 2.1, (2, 2): 2.2, (2, 3): 2.3}
