@@ -799,7 +799,7 @@ print("mat_logs_dec:\n",mat_logs_decomp)
 for key in unique_node_dict:
     print(unique_node_dict[key]) """
 
-mat_logs = MatrixSparseDOK()
+""" mat_logs = MatrixSparseDOK()
 
 mat_logs_data = {(19, 23): 14, (20, 21): 34, (21, 21): 22, (22, 24): 2, (22, 28): 4, (23, 22): 8, (23, 23): 4, (23,39): 6}
 for key, value in mat_logs_data.items():
@@ -817,4 +817,4 @@ print("almost_final:\n",final_mat)
 
 final_mat += mat_logs2
 
-print("final:\n",final_mat)
+print("final:\n",final_mat) """
