@@ -4,7 +4,7 @@
 #https://datagy.io/python-replace-item-in-list/
 
 from __future__ import annotations
-from typing import OrderedDict, Union, final
+from typing import Union
 from MatrixSparse import *
 from Position import *
 
@@ -446,13 +446,21 @@ class MatrixSparseDOK(MatrixSparse):
             rows_list.append(row)
             offset_list.append(0)
         most_dense_row = None
+        most_dense_row_amount = 0
         while(rows_list):
-            for row in rows_list:                
-                temp_row_list_values = list(filter((self._zero).__ne__, self.row(row)))
+            for row in rows_list:
+                amount = 0
+                for value in self.row(row):
+                    if value != self._zero:
+                        amount += 1
+                print("OMG:",amount)
+                #temp_row_list_values = list(filter((self._zero).__ne__, self.row(row)))
                 if most_dense_row == None:
                     most_dense_row = row
-                elif len(temp_row_list_values) > len(list(filter((self._zero).__ne__, self.row(most_dense_row)))):
+                    most_dense_row_amount = amount
+                elif amount > most_dense_row_amount:
                     most_dense_row = row
+                    most_dense_row_amount = amount
             print("most_dense_row:",most_dense_row)
 
             if not(final_values_list):
@@ -477,43 +485,51 @@ class MatrixSparseDOK(MatrixSparse):
                 cols_free = True
                 extra_cols = False
                 temp_offset = 0
-                keys_list = self._items.keys()
+                #keys_list = self.row(most_dense_row)
+                #print("keys_list:",keys_list)
+                keys_list = []
+                for col in range(min_col,max_col+1):
+                    keys_list.append((most_dense_row,col))
+                #keys_list = self._items.keys()
                 while not(done):     
                     temp_final_values_list = final_values_list.copy()
                     temp_final_rows_list = final_rows_list.copy()
+                    #print("KEYS_LIST:",keys_list)
                     for k in keys_list:
-                        if k[0] == most_dense_row:
-                            print("pos",(k[0],k[1]))
-                            print("k",k[1])
-                            print("to",temp_offset)
-                            print("m",min_col)                            
-                            if k[1]+temp_offset-min_col > len(final_values_list)-1:                                
-                                temp_final_values_list.insert(k[1]+temp_offset-min_col,self.__getitem__((k[0],k[1])))
-                                temp_final_rows_list.insert(k[1]+temp_offset-min_col,most_dense_row)
-                                print("value",temp_final_values_list[k[1]+temp_offset-min_col])
-                                print("rows",temp_final_rows_list[k[1]+temp_offset-min_col])
-                                extra_cols = True
-                            elif final_values_list[k[1]+temp_offset-min_col] != self._zero:
-                                print("value",final_values_list[k[1]+temp_offset-min_col])
-                                cols_free = False
-                            else:
-                                print("value",final_values_list[k[1]+temp_offset-min_col])
+                        print("pos",(k[0],k[1]))
+                        print("k",k[1])
+                        print("to",temp_offset)
+                        print("m",min_col)                            
+                        if k[1]+temp_offset-min_col > len(final_values_list)-1:                                
+                            temp_final_values_list.insert(k[1]+temp_offset-min_col,self.__getitem__((k[0],k[1])))
+                            temp_final_rows_list.insert(k[1]+temp_offset-min_col,most_dense_row)
+                            #print("value",temp_final_values_list[k[1]+temp_offset-min_col])
+                            #print("rows",temp_final_rows_list[k[1]+temp_offset-min_col])
+                            extra_cols = True
+                        elif final_values_list[k[1]+temp_offset-min_col] != self._zero and self.__getitem__((k[0],k[1])) != self._zero:
+                            print("value FALSE",final_values_list[k[1]+temp_offset-min_col])
+                            cols_free = False
+                        else:
+                            print("value",final_values_list[k[1]+temp_offset-min_col])
+                            if final_values_list[k[1]+temp_offset-min_col] == self._zero:
                                 temp_final_values_list[k[1]+temp_offset-min_col] = self.__getitem__((k[0],k[1]))
                                 temp_final_rows_list[k[1]+temp_offset-min_col] = most_dense_row
+                        print("temp_final_values_list:\n",temp_final_values_list)
+                        print("temp_final_rows_list:\n",temp_final_rows_list)
                     if cols_free:
                         done = True
                     else:
                         temp_offset+=1
                         cols_free = True
                         extra_cols = False
-                print("temp_final_values_list:\n",temp_final_values_list)
-                print("temp_final_rows_list:\n",temp_final_rows_list)
+                print("semi_final temp_final_values_list:\n",temp_final_values_list)
+                print("semi_final temp_final_rows_list:\n",temp_final_rows_list)
                 if extra_cols:
                     final_values_list = temp_final_values_list.copy()
                     final_rows_list = temp_final_rows_list.copy()
                 else:
                     for k in keys_list:
-                            if k[0] == most_dense_row:
+                            if self.__getitem__((k[0],k[1])) != self._zero:
                                 """ print("aft pos",(k[0],k[1]))
                                 print("aft k",k[1])
                                 print("aft to",temp_offset)
@@ -526,13 +542,17 @@ class MatrixSparseDOK(MatrixSparse):
                 print("offset_list:\n",offset_list)
                 rows_list.remove(most_dense_row)
                 most_dense_row = None
-        for i in range(len(final_rows_list)):
-            if final_rows_list[i] == self._zero:
+        for i in range(len(final_values_list)):
+            if final_values_list[i] == self._zero:
                 final_rows_list[i] = -1
         print("final_values_list:\n",final_values_list)
         print("final_rows_list:\n",final_rows_list)
         print("offset_list:\n",offset_list)
-        mat_c = ((min_row,min_col),float(self._zero),tuple(final_values_list) ,tuple(final_rows_list),tuple(offset_list))
+        if len(offset_list) == 1:
+            offset_tuple = (offset_list[0])
+        else:
+            offset_tuple = tuple(offset_list)
+        mat_c = ((min_row,min_col),float(self._zero),tuple(final_values_list) ,tuple(final_rows_list),offset_tuple)
         print("Final result:\n",mat_c)   
         return mat_c
 
@@ -593,7 +613,11 @@ class MatrixSparseDOK(MatrixSparse):
         additional_remove = False
         rows_list = list(compressed_vector[3])
         offset_list = list(compressed_vector[4])
-        sorted_rows_list = sorted(list(filter((-1).__ne__, rows_list)))
+        sorted_rows_list = rows_list.copy()
+        for value in sorted_rows_list:
+            if value == -1:
+                sorted_rows_list.remove(-1)
+        #sorted_rows_list = sorted(list(filter((-1).__ne__, rows_list)))
         #print("sorted set offset values: ",sorted_rows_list)
         while(len(rows_list) > 0):
             #print("BEGIN rows_list:",rows_list)
@@ -602,7 +626,12 @@ class MatrixSparseDOK(MatrixSparse):
             if highest_density_row == -1:
                 #ignore -1 and get next highest value in rows_list
                 temp_list = rows_list.copy()
-                temp_list = list(filter((-1).__ne__, temp_list))
+                temp_list = list(filter(lambda a: a != -1, temp_list))
+                """ for value in temp_list:
+                    if value == -1:
+                        temp_list.remove(-1) """
+                #temp_list = list(filter((-1).__ne__, temp_list))
+                print("TEMP LIST:\n",temp_list)
                 #After the filter, if temp_list is empty, then the mat_dc is complete, so we return it
                 if(temp_list):                    
                     highest_density_row = max(set(temp_list), key = temp_list.count)
@@ -613,9 +642,9 @@ class MatrixSparseDOK(MatrixSparse):
                 
             #start with highest density row
             #compressed_vector[3][col] is row while col is collumn
-           # print("highest:",highest_density_row)
-            #print("offset_list:",offset_list)
-            #print("sorted set offset values: ",sorted_rows_list)
+            print("highest:",highest_density_row)
+            print("offset_list:",offset_list)
+            print("sorted set offset values: ",sorted_rows_list)
             offset_value = offset_list[highest_density_row - first_row]
             #print("offset value:",offset_value)
             for col in range(len(compressed_vector[3])):
@@ -633,10 +662,18 @@ class MatrixSparseDOK(MatrixSparse):
             #print("mat_dc:")
             print(mat_dc)
             #remove highest_density_row from rows_list
-            rows_list = list(filter((highest_density_row).__ne__, rows_list))
+            """ for value in rows_list:
+                if value == highest_density_row:
+                    rows_list.remove(highest_density_row) """
+            rows_list = list(filter(lambda a: a != highest_density_row, rows_list))
+            #rows_list = list(filter((highest_density_row).__ne__, rows_list))
             #if -1 was found, remove it
             if additional_remove:
-                rows_list = list(filter((-1).__ne__, rows_list))
+                """ for value in rows_list:
+                    if value == -1:
+                        rows_list.remove(-1) """
+                rows_list = list(filter(lambda a: a != -1, rows_list))
+                #rows_list = list(filter((-1).__ne__, rows_list))
                 additional_remove = False
             #remove last value of offset_list using pop()
             #offset_list.pop()
@@ -679,6 +716,105 @@ test_list.insert(2,2)
 test_list.insert(0,0)
 print(test_list) """
 
-test_list = [8.1,2.2]
+""" test_list = [8.1,2.2]
 print(test_list)
-print(tuple(test_list))
+print(tuple(test_list)) """
+
+""" mat_logs = MatrixSparseDOK()
+
+mat_logs_data = {(15, 54): 2, (15, 55): 10, (15, 56): 2, (16, 52): 8, (16, 54): 4}
+for key, value in mat_logs_data.items():
+    mat_logs[Position(key[0], key[1])] = value
+
+mat_logs_comp = mat_logs.compress()
+
+print("compress done!\n\n")
+
+mat_logs2 = MatrixSparseDOK()
+
+mat_logs_decomp = mat_logs.decompress(mat_logs_comp)
+
+print("mat_logs:\n",mat_logs)
+print("mat_logs_dec:\n",mat_logs_decomp)
+#print(mat_logs==mat_logs_decomp) """
+
+""" mat_logs = MatrixSparseDOK()
+#returns error with this one, check later
+#mat_logs_data = {(22, 2): 2, (22, 11): 10, (21, 12): 2, (22, 9): 8, (22, 11): 4}
+mat_logs_data = {(22, 24): 2, (22, 23): 10, (22, 28): 4, (23, 22): 8, (23, 23): 4, (23,39): 6}
+for key, value in mat_logs_data.items():
+    mat_logs[Position(key[0], key[1])] = value
+
+hours_mat = mat_logs.__copy__()
+
+print(hours_mat)
+
+hour_picked = 22
+for k in mat_logs:
+    if k[0] != hour_picked:
+        hours_mat[(k[0],k[1])] = hours_mat._zero
+
+print(hours_mat)
+
+print(hours_mat.compress()) """
+
+""" mat_logs = MatrixSparseDOK()
+#returns error with this one, check later
+#mat_logs_data = {(22, 2): 2, (22, 11): 10, (21, 12): 2, (22, 9): 8, (22, 11): 4}
+mat_logs_data = {(19, 23): 34, (20, 21): 34, (21, 21): 22, (22, 24): 2, (22, 28): 4, (23, 22): 8, (23, 23): 4, (23,39): 6}
+for key, value in mat_logs_data.items():
+    mat_logs[Position(key[0], key[1])] = value
+
+minutes_mat = mat_logs.__copy__()
+
+print(minutes_mat)
+
+minutes_mat_picked = 23
+for k in mat_logs:
+    if k[1] != minutes_mat_picked:
+        minutes_mat[(k[0],k[1])] = minutes_mat._zero
+
+print(minutes_mat)
+
+print(minutes_mat.compress()) """
+
+""" mat_logs = MatrixSparseDOK()
+
+mat_logs_data = {(19, 23): 34, (20, 21): 34, (21, 21): 22, (22, 24): 2, (22, 28): 4, (23, 22): 8, (23, 23): 4, (23,39): 6}
+for key, value in mat_logs_data.items():
+    mat_logs[Position(key[0], key[1])] = value
+
+mat_logs_comp = mat_logs.compress()
+
+print("compress done!\n\n")
+
+mat_logs_decomp = mat_logs.decompress(mat_logs_comp)
+
+print("mat_logs:\n",mat_logs)
+print("mat_logs_dec:\n",mat_logs_decomp)
+#print(mat_logs==mat_logs_decomp) """
+
+""" unique_node_dict = {'node3': ((9, 21), 0.0, (34, 8.0, 4.0, 2, 34, 22, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6.0, 0, 0, 0, 0, 0), (10, 13, 13, 12, 9, 11, -1, 12, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 13, -1, -1, -1, -1, -1), (2, 0, 5, 0, 0)), '240ac400': ((9, 21), 0.0, (34, 8.0, 4.0, 2, 34, 22, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6.0, 0, 0, 0, 0, 0), (10, 13, 13, 12, 9, 11, -1, 12, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 13, -1, -1, -1, -1, -1), (2, 0, 5, 0, 0))}
+
+for key in unique_node_dict:
+    print(unique_node_dict[key]) """
+
+mat_logs = MatrixSparseDOK()
+
+mat_logs_data = {(19, 23): 14, (20, 21): 34, (21, 21): 22, (22, 24): 2, (22, 28): 4, (23, 22): 8, (23, 23): 4, (23,39): 6}
+for key, value in mat_logs_data.items():
+    mat_logs[Position(key[0], key[1])] = value
+
+mat_logs2 = MatrixSparseDOK()
+
+mat_logs2_data = {(18, 1): 34}
+for key, value in mat_logs2_data.items():
+    mat_logs2[Position(key[0], key[1])] = value
+
+final_mat = mat_logs
+
+print("almost_final:\n",final_mat)
+
+final_mat += mat_logs2
+
+print("final:\n",final_mat)

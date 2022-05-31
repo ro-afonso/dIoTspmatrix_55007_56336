@@ -291,7 +291,7 @@ class TestMatrixSparseAddMatrix(unittest.TestCase):
         self.assertEqual(len(m1_data), len(m1))
         for key, value in m2_data.items():
             self.assertAlmostEqual(value, m2[Position(key[0], key[1])])
-        self.assertEqual(len(m2_data), len(m2))
+        self.assertEqual(len(m2_data), len(m2)) 
 
     # __add__ with matrix simple test overlapping matrices
     def test_03___add___m2x3_4items_with_overlapping_m2x3_4items(self):
