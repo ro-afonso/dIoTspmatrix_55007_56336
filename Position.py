@@ -13,15 +13,14 @@ class Position:
         self._pos = row, col
 
     def __str__(self):
-        return str(self._pos)     #Isto fui eu que tentei, antes estava pass
+        return str(self._pos)    
 
     def __getitem__(self, item: int) -> int:
         if not(isinstance(item, int) and (0 <= item <= 1)):
             raise ValueError('__getitem__() invalid arguments')
         return self._pos[item]
 
-    def __eq__(self, other: Position):  #Devemos adicionar -> Bool ?
-        #print(self, "Esta é a pos:",other)
+    def __eq__(self, other: Position)  -> bool: 
         other = create_pos(other, '__eq__() invalid arguments')
         return self._pos == other._pos   #usamos other._pos para não comparar tuple com object Position
 
@@ -36,19 +35,15 @@ def position_is_error(pos: Position, str: str):
         raise ValueError(str)
 
 def position_is(pos: Position) -> bool:
-    #print("pos type: ",pos.__class__.__name__)
     #if it's a tuple with only 2 int values then convert to Position type
     if isinstance(pos,tuple) and len(pos) == 2:
         row,col = pos
         if isinstance(row, int) and row >= 0 and isinstance(col, int) and col >= 0:
             return True
     if not(isinstance(pos,Position)):
-        #print(1)
         return False
     if not ((isinstance(pos[0],int)) and pos[0] >= 0) or not((isinstance(pos[1],int)) and pos[1] >= 0):
-        #print(2)
         return False
-    #print(3)
     return True
 
 def create_pos(pos: Union[tuple, Position], str: str) -> Position:
@@ -61,6 +56,3 @@ def create_pos(pos: Union[tuple, Position], str: str) -> Position:
     elif not(isinstance(pos, Position)):
         raise ValueError(str)
     return p 
-
-
-#Position(1, 2, 3)

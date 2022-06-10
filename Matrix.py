@@ -32,7 +32,6 @@ class Matrix(ABC):
     def __add__(self, other):
         if isinstance(other, (int, float)):
             return self._add_number(other)
-        #TODO change this to transform into matrix
         if isinstance(other, Matrix):
             if other.zero == self.zero:
                 return self._add_matrix(other)
