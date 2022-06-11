@@ -15,6 +15,10 @@ def spmatrix_is_error(mat: MatrixSparseDOK, error: str):
     if not(spmatrix_is(mat)):
         raise ValueError(error)
 
+"""spmatrix_is_error(mat, error):
+Checks if the matrix is a valid sparse matrix.
+Raises a ValueError if the matrix is not valid.
+"""
 def spmatrix_is(mat: MatrixSparseDOK) -> bool:
     if not(isinstance(mat, MatrixSparseDOK)) or not(isinstance(mat._zero,(float,int))) or not(isinstance(mat._items, dict)):
         print(1)
@@ -27,7 +31,13 @@ def spmatrix_is(mat: MatrixSparseDOK) -> bool:
             print(4)
             return False
     return True
-
+    """spmatrix_is(mat):
+    Checks if the matrix is a valid sparse matrix.
+    Args:
+        mat (_type_, optional): matrix to be checked
+    Returns:
+        bool: True if the matrix is valid, False otherwise.
+    """
 
 def compressed_vector_is(compressed_vector: compress) -> bool:
     if not(isinstance(compressed_vector[0][0],int) and isinstance(compressed_vector[0][1],int)):
@@ -46,23 +56,41 @@ def compressed_vector_is(compressed_vector: compress) -> bool:
             if not(isinstance(i,float) or isinstance(i,int)):
                 return False
     return True
-
+"""compressed_vector_is(compressed_vector):
+Checks if the compressed vector is a valid compressed vector.
+Args:
+    compressed_vector (_type_, optional): comprressed vector of a matrix
+Returns:
+    bool: True if the compressed vector is valid, False otherwise.
+"""
 class MatrixSparseDOK(MatrixSparse):
     _items = spmatrix
-
+    
     def get_items(self) -> spmatrix:
         return self._items
-
+    """get_items(self) -> spmatrix:
+    Returns the items of the matrix.
+    Returns:
+        spmatrix: The items of the matrix.
+    """
     def __init__(self, zero: float = 0):      
         if not ((isinstance(zero,float) or isinstance(zero, int)) ):
             """ and zero >= 0 """
             raise ValueError('__init__() invalid arguments')  #removed matrixsparseDOK
         self._items = {}
         self._zero = zero
-
+    """__init__(self, zero: float = 0):
+    Initializes the matrix.
+    Args:
+        zero (_type_, optional): zero of the matrix. Defaults to 0.
+    """
     @property
     def zero(self) -> float:
         return self._zero
+    """zero(self) -> float:
+    Returns the zero value of the matrix.
+    Returns:
+        float: The zero value of the matrix."""
 
     @zero.setter
     def zero(self, val: float):
@@ -71,12 +99,21 @@ class MatrixSparseDOK(MatrixSparse):
         for k in temp_dict:
             if temp_dict[k] == self._zero:
                 del self._items[k]
+    """zero(self, val: float):
+    Sets the zero value of the matrix.
+    Args:
+        val (_type_, optional): zero new valor. Defaults to 0.
+    """
 
     def __copy__(self):
         m = MatrixSparseDOK(self.zero)
         for k in self._items:
                 m[k] = self._items[k]
         return m
+    """__copy__(self):
+    Returns a copy of the matrix.
+    Returns:
+        MatrixSparseDOK: A copy of the matrix."""
 
     def __eq__(self, other: MatrixSparseDOK):
         if isinstance(other, float):  #this is done because of test_05___eq___(self) in part2
@@ -88,11 +125,22 @@ class MatrixSparseDOK(MatrixSparse):
                 return True
             return False
         return False
+    """__eq__(self, other: MatrixSparseDOK):
+    Checks if the matrix is equal to another matrix.
+    Args:
+        other (_type_, optional): other matrix to compare
+    Returns:
+        bool: True if the matrix is equal to another matrix, False otherwise.
+    """
 
     #makes items iterable by returning a value of type dict_keyiterator that yields the dict's keys and can be used with __getitem__
     def __iter__(self):
         #OrderedDict
         return iter(sorted(self._items))   #sorted is needed for equal with 2 dicts with unordered keys
+    """__iter__(self):
+    Returns an iterator over the matrix.
+    Returns:
+        dict_keyiterator: An iterator over the matrix."""
 
     def __next__(self):
         try:
@@ -101,7 +149,11 @@ class MatrixSparseDOK(MatrixSparse):
             raise StopIteration
         self.i += 1
         return rv
-    
+    """__next__(self):
+    Returns the next item in the matrix.
+    Returns:
+        dict_keyiterator: The next item in the matrix."""
+
     def __getitem__(self, pos: Union[Position, position]) -> float:
         pos = create_pos(pos, "__getitem__() invalid arguments")
         position_is_error(pos, "__getitem__() invalid arguments")
@@ -109,6 +161,12 @@ class MatrixSparseDOK(MatrixSparse):
             return self._items[pos.get_pos()]
         else:
             return self._zero
+    """__getitem__(self, pos: Union[Position, position]):
+    Returns the value of the matrix at the given position.
+    Args:
+        pos (_type_, optional): position of item.
+    Returns:
+        float: The value of the matrix at the given position."""
 
     def __setitem__(self, pos: Union[Position, position], val: Union[int, float]):  #self,key,value
         pos = create_pos(pos, "__setitem__() invalid arguments")
@@ -121,9 +179,19 @@ class MatrixSparseDOK(MatrixSparse):
         self._items[pos.get_pos()] = val
         if(val == self.zero):
             del self._items[pos.get_pos()]
+    """__setitem__(self, pos: Union[Position, position], val: Union[int, float]):
+    Sets the value of the matrix at the given position.
+    Args:
+        pos (_type_, optional): position of the item. 
+        val (_type_, optional): valor of the item.
+    """
 
     def __len__(self) -> int:
         return len(self._items)
+    """__len__(self) -> int:
+    Returns the length of the matrix.
+    Returns:
+        int: The length of the matrix."""
 
     def _add_number(self, other: Union[int, float]) -> Matrix:
         if not(isinstance(other, float) or isinstance(other, int)):
@@ -135,7 +203,12 @@ class MatrixSparseDOK(MatrixSparse):
                 m2[k] += other
             return m2
         return self
-        
+    """_add_number(self, other: Union[int, float]) -> Matrix:
+    Adds a number to the matrix.
+    Args:
+        other (_type_, optional): number to add.
+    Returns:
+        Matrix: The matrix with the number added."""
         
     def _add_matrix(self, other: MatrixSparse) -> MatrixSparse:
         spmatrix_is_error(other, "_add_matrix() invalid arguments")
@@ -170,19 +243,29 @@ class MatrixSparseDOK(MatrixSparse):
                         other_value = 0                    
                     m3[(row,col)] = self_value + other_value
         return m3
+    """_add_matrix(self, other: MatrixSparse):
+    Adds a matrix to the matrix.
+    Args:
+        other (_type_, optional): other matrix to add.
+    Returns:
+        MatrixSparse: The matrix with the matrix added."""
 
     def _mul_number(self, other: Union[int, float]) -> Matrix:
         if not(isinstance(other, float) or isinstance(other, int)):
             raise ValueError("_add_number() invalid arguments")
         if self.dim():
-            print("self before add:",self)
             m2 = self.__copy__()
             for k in list(self._items.keys()):
-                #m2[k] = self[k] + other
                 m2[k] *= other
             m2._zero *= other  
             return m2
         return self
+    """_mul_number(self, other: Union[int, float]) -> Matrix:
+    Multiplies a number to the matrix.
+    Args:
+        other (_type_, optional): number to multply.
+    Returns:
+        Matrix: The matrix with the number multiplied."""
 
     def _mul_matrix(self, other: MatrixSparse) -> MatrixSparse:
         spmatrix_is_error(other, "_mul_matrix() invalid arguments")
@@ -223,6 +306,12 @@ class MatrixSparseDOK(MatrixSparse):
                 if num != other_max_row-other_min_row + 1:
                     m3[Position(row+self_min_row,col+other_min_col)] = final_value
         return m3
+    """_mul_matrix(self, other: MatrixSparse) -> MatrixSparse:
+    Multiplies a matrix with other matrix.
+    Args:
+        other (_type_, optional): second matrix to multiply.
+    Returns:
+        MatrixSparse: The matrix with the matrix multiplied."""
 
     def dim(self) -> tuple[Position, ...]:
         if(len(self._items) == 0):
@@ -233,6 +322,10 @@ class MatrixSparseDOK(MatrixSparse):
         max_col = max(pos[1] for pos in positions)
         max_row = max(pos[0] for pos in positions)
         return (Position(min_row, min_col), Position(max_row, max_col))
+    """dim(self) -> tuple[Position, ...]:
+    Returns the minimum and maximum position of the matrix.
+    Returns:
+        tuple[Position, ...]: The minimum and maximum position of the matrix."""
 
     def row(self, row: int) -> Matrix:
         if not(isinstance(row, int)):
@@ -246,6 +339,12 @@ class MatrixSparseDOK(MatrixSparse):
                 val = self._items[keys[num]]
                 m[keys[num]] = val
         return m
+    """row(self, row: int) -> Matrix:
+    Returns a matrix with the row of the matrix.
+    Args:
+        row (_type_, optional): row to return.
+    Returns:
+        Matrix: The matrix with the row."""
 
     def col(self, col: int) -> Matrix:
         if not(isinstance(col, int)):
@@ -259,6 +358,12 @@ class MatrixSparseDOK(MatrixSparse):
                 val = self._items[keys[num]]
                 m[keys[num]] = val
         return m
+    """col(self, col: int) -> Matrix:
+    Returns a matrix with the column of the matrix.
+    Args:
+        col (_type_, optional): column to return.
+    Returns:
+        Matrix: The matrix with the column."""
 
     def diagonal(self) -> Matrix:
         self.spmatrix_is_square_error("diagonal() invalid arguments")
@@ -271,6 +376,10 @@ class MatrixSparseDOK(MatrixSparse):
                         val = self._items[Position(num,num)]
                         m[Position(num,num)] = val
         return m
+    """diagonal(self) -> Matrix:
+    Returns a matrix with the diagonal of the matrix.
+    Returns:
+        Matrix: The matrix with the diagonal."""
 
     @staticmethod
     def eye(size: int, unitary: float = 1.0, zero: float = 0.0) -> MatrixSparseDOK:
@@ -280,6 +389,15 @@ class MatrixSparseDOK(MatrixSparse):
         for i in range(size):
             m1[Position(i,i)] = unitary
         return m1
+
+    """eye(size: int, unitary: float = 1.0, zero: float = 0.0) -> MatrixSparseDOK:
+    Returns a matrix with the identity of the size.
+    Args:
+        size (_type_, optional): size of the matrix.
+        unitary (_type_, optional): value of the identity.
+        zero (_type_, optional): value of the zero.
+    Returns:
+        MatrixSparseDOK: The matrix with the identity."""
 
     def transpose(self) -> MatrixSparseDOK:
         if self.dim():                      #if self.dim() returns () then the matrix has no values, so no transpose
@@ -294,6 +412,10 @@ class MatrixSparseDOK(MatrixSparse):
                     m_transposed[(col,row)] = self.__getitem__((row,col))
             return m_transposed
         return self
+    """transpose(self) -> MatrixSparseDOK:
+    Returns the transpose of the matrix.
+    Returns:
+        MatrixSparseDOK: The transpose of the matrix."""
 
     def compress(self) -> compressed:
         if self.sparsity() < 0.5:
@@ -375,31 +497,32 @@ class MatrixSparseDOK(MatrixSparse):
                                 final_values_list[k[1]+temp_offset-min_col] = self.__getitem__((k[0],k[1]))
                                 final_rows_list[k[1]+temp_offset-min_col] = most_dense_row                    
                 offset_list[most_dense_row-min_row] = temp_offset
-                print("final_values_list:\n",final_values_list)
-                print("final_rows_list:\n",final_rows_list)
-                print("offset_list:\n",offset_list)
                 rows_list.remove(most_dense_row)
                 most_dense_row = None
         for i in range(len(final_values_list)):
             if final_values_list[i] == self._zero:
                 final_rows_list[i] = -1
-        print("final_values_list:\n",final_values_list)
-        print("final_rows_list:\n",final_rows_list)
-        print("offset_list:\n",offset_list)
         if len(offset_list) == 1:
             offset_tuple = (offset_list[0])
         else:
             offset_tuple = tuple(offset_list)
         mat_c = ((min_row,min_col),float(self._zero),tuple(final_values_list) ,tuple(final_rows_list),offset_tuple)
-        print("Final result:\n",mat_c)   
         return mat_c
+    """compress(self) -> compressed:
+    Returns the compressed version of the matrix.
+    Returns:
+        compressed: The compressed version of the matrix."""
 
     def compressed_is_dense(self):
         if self.is_empty():
             return False
         else:
             return True
-        
+    """compressed_is_dense(self) -> bool:
+    Returns whether the matrix is dense or not.
+    Returns:
+        bool: True if the matrix is dense, False otherwise."""
+
     @staticmethod
     def doi(compressed_vector: compressed, pos: Position) -> float:
         if not(position_is(compressed_vector[0])):
@@ -426,11 +549,16 @@ class MatrixSparseDOK(MatrixSparse):
             raise ValueError('doi() invalid parameters')
 
         return compressed_vector[1]
+    """doi(compressed_vector: compressed, pos: Position) -> float:
+    Returns the value of the matrix at the given position.
+    Parameters:
+        compressed_vector: The compressed vector to get the value from.
+        pos: The position to get the value from.
+    Returns:
+        float: The value at the given position."""
 
     @staticmethod
     def decompress(compressed_vector: compressed) -> MatrixSparse:
-        """ for i in range(len(compressed_vector)):
-            print(compressed_vector[i]) """
         mat_dc = MatrixSparseDOK(compressed_vector[1]) #create mat with compressed_vector's zero
         first_row = compressed_vector[0][0]
         first_col = compressed_vector[0][1]
@@ -447,10 +575,6 @@ class MatrixSparseDOK(MatrixSparse):
                 #ignore -1 and get next highest value in rows_list
                 temp_list = rows_list.copy()
                 temp_list = list(filter(lambda a: a != -1, temp_list))
-                """ for value in temp_list:
-                    if value == -1:
-                        temp_list.remove(-1) """
-                print("TEMP LIST:\n",temp_list)
                 #After the filter, if temp_list is empty, then the mat_dc is complete, so we return it
                 if(temp_list):                    
                     highest_density_row = max(set(temp_list), key = temp_list.count)
@@ -461,28 +585,23 @@ class MatrixSparseDOK(MatrixSparse):
                 
             #start with highest density row
             #compressed_vector[3][col] is row while col is collumn
-            print("highest:",highest_density_row)
-            print("offset_list:",offset_list)
-            print("sorted set offset values: ",sorted_rows_list)
             offset_value = offset_list[highest_density_row - first_row]
             for col in range(len(compressed_vector[3])):
-                print("cv col",col,"=",compressed_vector[3][col])
                 
                 if compressed_vector[3][col] == highest_density_row:
                     mat_dc[compressed_vector[3][col],col+first_col-offset_value] = compressed_vector[2][col]
-            print(mat_dc)
-            """ for value in rows_list:
-                if value == highest_density_row:
-                    rows_list.remove(highest_density_row) """
             rows_list = list(filter(lambda a: a != highest_density_row, rows_list))
             if additional_remove:
-                """ for value in rows_list:
-                    if value == -1:
-                        rows_list.remove(-1) """
                 rows_list = list(filter(lambda a: a != -1, rows_list))
                 additional_remove = False
 
         return mat_dc
+    """decompress(compressed_vector: compressed) -> MatrixSparse:
+    Returns the decompressed version of the matrix.
+    Parameters:
+        compressed_vector: The compressed vector to get the value from.
+    Returns:
+        MatrixSparse: The decompressed version of the matrix."""
 
     def spmatrix_is_square_error(self, str1: str):
         if not(isinstance(str1, str)):
@@ -492,3 +611,9 @@ class MatrixSparseDOK(MatrixSparse):
         ys = [k[1] for k in keys]
         if not(max(xs) == max(ys)):
             raise ValueError(str1)
+    """spmatrix_is_square_error(self, str1: str):
+    Raises a ValueError if the matrix is not square.
+    Parameters:
+        str1: The string to raise the ValueError with.
+    Raises:
+        ValueError: If the matrix is not square."""

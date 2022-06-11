@@ -37,7 +37,12 @@ class Matrix(ABC):
                 return self._add_matrix(other)
             raise ValueError('_add_matrix() incompatible matrices')
         raise ValueError('_add__ invalid argument')
-
+    """__add__(self, other: Union[int, float, Matrix]) -> Matrix:
+    Parameters:
+        other: value or matrix to be added to the matrix
+    Returns:
+        Matrix object"""
+        
     @abstractmethod
     def _add_number(self, other: Union[int, float]) -> Matrix:
         raise NotImplementedError
@@ -52,6 +57,11 @@ class Matrix(ABC):
         if isinstance(other, Matrix):
             return self._mul_matrix(other)
         raise ValueError('__mul__ invalid argument')
+    """__mul__(self, other: Union[int, float, Matrix]) -> Matrix:
+    Parameters:
+        other: value or matrix to be multiplied to the matrix
+    Returns:
+        Matrix object"""
 
     @abstractmethod
     def _mul_number(self, other: Union[int, float]) -> Matrix:
@@ -79,7 +89,10 @@ class Matrix(ABC):
         except ValueError as error:
             raise ValueError("__str__ invalid argument")
         return strs[:-1]
-
+    """__str__(self) -> str:
+    Returns:
+        string representation of the matrix"""
+        
     @abstractmethod
     def dim(self) -> tuple[Position, ...]:
         raise NotImplementedError

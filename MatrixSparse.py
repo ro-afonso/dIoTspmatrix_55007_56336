@@ -12,28 +12,40 @@ class MatrixSparse(Matrix):
         if not ((isinstance(zero,float) or isinstance(zero, int)) ):
             raise ValueError('__init__() invalid arguments')
         self._zero = zero
+    """__init__(self, zero: float) -> MatrixSparse:
+    Parameters:
+        zero: value to be used as zero
+    Returns:
+        MatrixSparse object"""
 
     @property
     def zero(self) -> float:
         return self._zero
+    """zero(self) -> float:
+    Returns:
+        value used as zero"""
 
     @zero.setter
     def zero(self, val: float):
         if not ((isinstance(val,float) or isinstance(val, int))):
             raise ValueError('__zero__() invalid arguments')
         self._zero = val   
-
+    """zero(self) -> float:
+    Returns:
+        value to be used as zero"""
 
     @abstractmethod
     def __len__(self) -> int:
         raise NotImplementedError
-
+    
     def sparsity(self) -> float:
         dim = self.dim()
         if(len(self) == 0):
             return 1.0
         return 1.0 - (len(self) / ((dim[1][0] - dim[0][0] + 1) * (dim[1][1] - dim[0][1] + 1)))
-
+    """sparsity(self) -> float:
+    Returns:
+        sparsity of the matrix"""
 
     @staticmethod
     @abstractmethod
