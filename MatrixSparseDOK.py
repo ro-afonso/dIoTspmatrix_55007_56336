@@ -227,14 +227,34 @@ class MatrixSparseDOK(MatrixSparse):
         other_min_col = other_min_dim[1]
         other_max_col = other_max_dim[1]
 
+        """
         if other_min_row > self_min_row:    
             self_max_row = other_min_row    
-                                            
+        """
+        if self_min_row < other_min_row:
+            min_row = self_min_row
+        else:
+            min_row = other_min_row
+        
+        if self_max_row > other_max_row:
+            max_row = self_max_row
+        else:
+            max_row = other_max_row
+        
+        if self_min_col < other_min_col:
+            min_col = self_min_col
+        else:
+            min_col = other_min_col
+        
+        if self_max_col > other_max_col:
+            max_col = self_max_col
+        else:
+            max_col = other_max_col
         
 
         m3 = MatrixSparseDOK(self._zero)
-        for row in range(self_min_row, self_max_row+1):
-                for col in range(self_min_col, self_max_col+1):                    
+        for row in range(min_row, max_row+1):
+                for col in range(min_col, max_col+1):                    
                     self_value = self.__getitem__((row,col))
                     other_value = other.__getitem__((row,col))
                     if self_value == self._zero:

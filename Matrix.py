@@ -93,6 +93,7 @@ class Matrix(ABC):
     Returns:
         string representation of the matrix"""
         
+        
     @abstractmethod
     def dim(self) -> tuple[Position, ...]:
         raise NotImplementedError
