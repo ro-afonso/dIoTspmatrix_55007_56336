@@ -4,7 +4,8 @@ Development of a system to monitor the number of people entering/leaving a class
 
 An initial set of public tests was provided for initial software development, with new public tests made available periodically for software code refactoring.
 
-The developed system was simulated in WOKWI and is available [here]([https://pages.github.com/](https://wokwi.com/projects/334412072311849556)https://wokwi.com/projects/334412072311849556).
+The developed system was simulated in WOKWI and is available [here](https://wokwi.com/projects/334412072311849556).
+
 The figure below depicts its conceptualisation (on the left) and implementation (on the right):
 ![DTSD IoT Monitoring System](https://github.com/ro-afonso/dIoTspmatrix_55007_56336/assets/93609933/0a21cb1e-0408-4842-9b74-7f6230810e27)
 
