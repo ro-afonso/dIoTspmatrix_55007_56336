@@ -7,6 +7,7 @@ An initial set of public tests was provided for initial software development, wi
 The developed system was simulated in WOKWI and is available [here](https://wokwi.com/projects/334412072311849556).
 
 The figure below depicts its conceptualisation (on the left) and implementation (on the right):
+
 ![DTSD IoT Monitoring System](https://github.com/ro-afonso/dIoTspmatrix_55007_56336/assets/93609933/2ff0d86b-6810-4a80-8e85-b18bdb51e21a)
 
 
